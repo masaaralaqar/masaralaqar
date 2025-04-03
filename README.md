@@ -1,69 +1,74 @@
-# Welcome to your Lovable project
+# مسار العقار - دليلك الذكي في عالم العقار
 
-## Project info
+منصة سعودية تساعد المهتمين بالعقار في اكتساب المعرفة الصحيحة، عبر دليل عقاري شامل، وبوت ذكي يجاوب على استفساراتك، وأدوات تسهّل عليك فهم التمويل، الاستثمار، وصيانة المنزل.
 
-**URL**: https://lovable.dev/projects/290e644e-f4bf-42d6-b502-10f65765957c
+## الموقع
 
-## How can I edit this code?
+**URL**: https://masar123.vercel.app
 
-There are several ways of editing your application.
+## المميزات
 
-**Use Lovable**
+- دليل عقاري شامل
+- مستشار عقاري ذكي
+- أدوات التمويل العقاري
+- نصائح الاستثمار
+- دليل صيانة المنزل
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/290e644e-f4bf-42d6-b502-10f65765957c) and start prompting.
+## التقنيات المستخدمة
 
-Changes made via Lovable will be committed automatically to this repo.
+- Next.js
+- TypeScript
+- Tailwind CSS
+- Shadcn/ui
+- React Query
+- Vercel
 
-**Use your preferred IDE**
+## التطوير المحلي
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+1. انسخ المشروع:
+```bash
+git clone https://github.com/yourusername/masar-al-aqar.git
+cd masar-al-aqar
+```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+2. ثبّت المتطلبات:
+```bash
+npm install
+```
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+3. شغّل المشروع محلياً:
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+4. افتح المتصفح على العنوان التالي:
+```
+http://localhost:8080
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## النشر
 
-**Use GitHub Codespaces**
+المشروع جاهز للنشر على Vercel. ببساطة:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1. انشئ حساباً على Vercel
+2. اربط المشروع بمستودع GitHub
+3. انشر المشروع
 
-## What technologies are used for this project?
+## المساهمة
 
-This project is built with .
+نرحب بمساهماتكم! يرجى:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. عمل Fork للمشروع
+2. إنشاء فرع جديد (`git checkout -b feature/amazing-feature`)
+3. عمل Commit للتغييرات (`git commit -m 'Add amazing feature'`)
+4. رفع التغييرات (`git push origin feature/amazing-feature`)
+5. فتح Pull Request
 
-## How can I deploy this project?
+## الترخيص
 
-Simply open [Lovable](https://lovable.dev/projects/290e644e-f4bf-42d6-b502-10f65765957c) and click on Share -> Publish.
+هذا المشروع مرخص تحت رخصة MIT. انظر ملف `LICENSE` للمزيد من التفاصيل.
 
-## I want to use a custom domain - is that possible?
+## الاتصال
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+- البريد الإلكتروني: support@masar123.vercel.app
+- تويتر: [@masaraqar](https://twitter.com/masaraqar)

@@ -1,6 +1,5 @@
-
 import React from "react";
-import { cn } from "@/lib/utils";
+import { cn, preventScrollOnNavigation } from "@/lib/utils";
 import { Step, StepId } from "./types";
 import { Check } from "lucide-react";
 
@@ -20,6 +19,8 @@ export function StepNavigation({
   const handleStepClick = (stepId: StepId) => {
     // Only allow clicking on completed steps
     if (completedSteps.has(stepId) && goToStep) {
+      // منع التمرير التلقائي عند النقر على خطوة أخرى
+      preventScrollOnNavigation();
       goToStep(stepId);
     }
   };

@@ -50,10 +50,14 @@ export function Header({ transparent = false }: HeaderProps) {
         <div className="flex items-center gap-2">
           <Link
             to="/"
-            className="flex items-center gap-2 font-bold text-base sm:text-lg transition-transform hover:scale-105"
+            className="flex items-center transition-transform hover:scale-105"
           >
-            <House className="h-5 w-5 text-primary" />
-            <span>مسار العقار</span>
+            <img 
+              src="/logo.svg" 
+              alt="Logo" 
+              className="h-12 w-auto"
+              style={{ maxHeight: '48px' }}
+            />
           </Link>
         </div>
 
@@ -128,9 +132,13 @@ function MobileMenu() {
       <SheetContent side="left" className="max-w-[280px]">
         <div className="grid gap-4 px-2 py-4">
           <SheetHeader>
-            <SheetTitle className="flex items-center gap-2">
-              <House className="h-5 w-5 text-primary" />
-              <span>مسار العقار</span>
+            <SheetTitle className="flex items-center justify-center">
+              <img 
+                src="/logo.svg" 
+                alt="Logo" 
+                className="h-16 w-auto"
+                style={{ maxHeight: '64px' }}
+              />
             </SheetTitle>
           </SheetHeader>
           <Separator />

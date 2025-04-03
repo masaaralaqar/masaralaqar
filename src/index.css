@@ -129,9 +129,9 @@
       "calt" 1;
   }
 
-  /* Apply smooth scrolling to the entire page */
+  /* Apply smooth scrolling to the entire page - disabled to prevent unwanted auto-scrolling */
   html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto; /* Changed from 'smooth' to 'auto' to prevent unwanted auto-scrolling */
   }
 }
 
@@ -485,4 +485,20 @@ h6 {
       opacity: 1;
     }
   }
+}
+
+/* Animation utilities */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.6s ease-out forwards;
 }

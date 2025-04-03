@@ -20,10 +20,11 @@ import { queryGeminiModel, mockGeminiQuery } from "../services/gemini-service";
 import { queryDeepseekModel, mockDeepseekQuery } from "../services/deepseek-service";
 import { queryOllamaModel, mockOllamaQuery } from "../services/ollama-service";
 import { useAuth } from "@/contexts/auth-context";
+import { preventAutoScroll } from "@/lib/utils";
 
 type Message = {
   id: string;
-  role: "user" | "assistant";
+  role: "user" | "assistant" | "system";
   content: string;
   timestamp: Date;
 };
@@ -44,57 +45,149 @@ function cleanMarkdown(text: string): string {
 export function SaudiRealEstateExpert() {
   const { toast } = useToast();
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    // Add initial system message but don't display it
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const initialMessages: Message[] = [
+      {
+        id: "assistant-1",
+        role: "assistant" as const,
+        content: `مرحباً ${user.name}، أنا أبو محمد مستشارك في مجال العقار. يمكنني مساعدتك بالمعلومات المتوفرة حول:\n\n- التمويل العقاري\n- خطوات شراء العقار\n- الإجراءات القانونية\n- المصطلحات العقارية\n\nهذه المنصة تقدم معلومات عامة فقط وليست بديلاً عن الاستشارات المهنية المتخصصة.`,
+        timestamp: new Date(),
+      }
+    ];
+    
+    return initialMessages;
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [activeModel, setActiveModel] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [autoScroll, setAutoScroll] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const { user } = useAuth();
 
   // Updated sample questions with emojis
   const sampleQuestions = [
     { emoji: "🔑", text: "ما هي خطوات شراء عقار في السعودية؟" },
-    { emoji: "💰", text: "كيف أختار أفضل تمويل عقاري يناسبني؟" },
-    { emoji: "📈", text: "ما هي نصائحك للاستثمار العقاري الآمن؟" },
+    { emoji: "💰", text: "كيف أختار تمويل عقاري يناسبني؟" },
+    { emoji: "📈", text: "ما هي أساسيات الاستثمار العقاري؟" },
     { emoji: "🧾", text: "كم رسوم التسجيل وضريبة التصرفات العقارية؟" },
-    { emoji: "🆚", text: "ما الفرق بين إيجار منتهي بالتمليك والتمويل العادي؟" },
-    { emoji: "⏰", text: "هل الوقت الحالي مناسب لشراء عقار؟" },
+    { emoji: "🆚", text: "ما هي أنواع عقود التمويل العقاري؟" },
+    { emoji: "⏰", text: "كيف أقيم العقار قبل الشراء؟" },
     { emoji: "💻", text: "كيف أتعامل مع منصة إيجار؟" }
   ];
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // يتحقق مما إذا كان المستخدم في نهاية المحادثة
+  const isAtBottom = () => {
+    if (!chatContainerRef.current) return true;
+    
+    const container = chatContainerRef.current;
+    const threshold = 100; // بكسل
+    const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+    
+    return distanceFromBottom <= threshold;
   };
 
+  // مراقبة التمرير لتحديد ما إذا كان المستخدم في أسفل المحادثة
+  const handleScroll = () => {
+    if (chatContainerRef.current) {
+      setAutoScroll(isAtBottom());
+    }
+  };
+
+  // تعيين الموضع المبدئي عند تحميل المكون
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    // منع التمرير التلقائي للأسفل بشكل مكثف
+    const cleanup = preventAutoScroll();
+    
+    // تطبيق متكرر لمنع التمرير للأسفل
+    const additionalPrevention = setInterval(() => {
+      window.scrollTo(0, 0);
+    }, 100);
+    
+    // إيقاف التطبيق المتكرر بعد ثانية
+    const stopPrevention = setTimeout(() => {
+      clearInterval(additionalPrevention);
+    }, 1000);
+    
+    if (chatContainerRef.current) {
+      chatContainerRef.current.addEventListener('scroll', handleScroll);
+    }
+    
+    return () => {
+      if (chatContainerRef.current) {
+        chatContainerRef.current.removeEventListener('scroll', handleScroll);
+      }
+      
+      if (cleanup) cleanup();
+      clearInterval(additionalPrevention);
+      clearTimeout(stopPrevention);
+    };
+  }, []);
 
   useEffect(() => {
-    // إضافة رسالة ترحيب عند تحميل الصفحة
-    if (user?.name) {
-      setMessages([
-        {
-          id: Date.now().toString(),
-          role: "assistant",
-          content: `مرحباً ${user.name}، أنا مستشارك العقاري الذكي. كيف يمكنني مساعدتك اليوم؟ يمكنني تقديم المشورة حول:\n\n- التمويل العقاري\n- اختيار العقار المناسب\n- تحليل الأسعار\n- نصائح الاستثمار العقاري\n- وغيرها من المواضيع المتعلقة بالعقارات`,
-          timestamp: new Date(),
-        }
-      ]);
+    // تعطيل التمرير التلقائي تمامًا عند إضافة رسائل جديدة
+    // نستثني فقط الحالة التي يكون فيها المستخدم في أسفل المحادثة ويرغب في استمرار التمرير
+    
+    // لا نمرر تلقائيًا إلا إذا كان المستخدم في أسفل المحادثة أصلاً
+    if (isInitialLoad) {
+      if (messages.length > 0) {
+        setIsInitialLoad(false);
+      }
+      return;
     }
-  }, [user]);
+    
+    // تجاهل التمرير التلقائي حتى عند إضافة رسائل جديدة إلا إذا كان المستخدم قد اختار ذلك صراحةً
+    if (messages.length > 0 && autoScroll && isAtBottom()) {
+      // استخدام تأخير صغير للسماح بتحديث واجهة المستخدم أولاً
+      const timer = setTimeout(() => {
+        if (messagesEndRef.current) {
+          // استخدام scrollTop بدلاً من scrollIntoView للتحكم بشكل أفضل
+          const container = chatContainerRef.current;
+          if (container) {
+            container.scrollTop = container.scrollHeight;
+          }
+        }
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [messages, autoScroll, isInitialLoad]);
+
+  useEffect(() => {
+    // منع التمرير لأسفل عند إضافة رسالة الترحيب
+    const initialScrollPos = window.scrollY;
+    
+    // إضافة رسالة ترحيب عند تحميل الصفحة
+    if (user?.name && messages.length === 0) {
+      const welcomeMessage: Message = {
+        id: Date.now().toString(),
+        role: "assistant",
+        content: `مرحباً ${user.name}، أنا أبو محمد مستشارك في مجال العقار. يمكنني مساعدتك بالمعلومات المتوفرة حول:\n\n- التمويل العقاري\n- خطوات شراء العقار\n- الإجراءات القانونية\n- المصطلحات العقارية\n\nهذه المنصة تقدم معلومات عامة فقط وليست بديلاً عن الاستشارات المهنية المتخصصة.`,
+        timestamp: new Date(),
+      };
+      
+      setMessages([welcomeMessage]);
+    }
+    
+    // الحفاظ على موضع التمرير
+    window.scrollTo(0, initialScrollPos);
+    
+    // إعادة تطبيق منع التمرير التلقائي للتأكيد
+    const timer = setTimeout(() => {
+      window.scrollTo(0, initialScrollPos);
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, [user, messages.length]);
 
   const getAIResponse = async (question: string) => {
     setIsLoading(true);
     setActiveModel(null);
     
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: question,
-      timestamp: new Date(),
-    };
-    setMessages(prev => [...prev, userMessage]);
-
+    // حفظ موضع التمرير الحالي
+    const currentScrollPosition = chatContainerRef.current?.scrollTop || 0;
+    
     let response: string | null = null;
     let modelUsed: string | null = null;
 
@@ -157,7 +250,21 @@ export function SaudiRealEstateExpert() {
         timestamp: new Date(),
       };
       
-      setMessages(prev => [...prev, assistantMessage]);
+      // تحديث الرسائل مع الحفاظ على موضع التمرير
+      setMessages(prev => {
+        const updatedMessages = [...prev, assistantMessage];
+        
+        // استخدام setTimeout للتأكد من تنفيذ هذا الكود بعد تحديث واجهة المستخدم
+        setTimeout(() => {
+          if (chatContainerRef.current && !autoScroll) {
+            // إعادة ضبط موضع التمرير فقط إذا كان المستخدم لم يفعل التمرير التلقائي
+            chatContainerRef.current.scrollTop = currentScrollPosition;
+          }
+        }, 0);
+        
+        return updatedMessages;
+      });
+      
       setActiveModel(modelUsed); 
 
     } catch (error) {
@@ -167,6 +274,13 @@ export function SaudiRealEstateExpert() {
         description: "لم نتمكن من الحصول على رد. يرجى المحاولة مرة أخرى.",
         variant: "destructive",
       });
+      
+      // إعادة ضبط موضع التمرير في حالة الخطأ أيضًا
+      setTimeout(() => {
+        if (chatContainerRef.current && !autoScroll) {
+          chatContainerRef.current.scrollTop = currentScrollPosition;
+        }
+      }, 0);
     } finally {
       setIsLoading(false);
     }
@@ -177,15 +291,90 @@ export function SaudiRealEstateExpert() {
     
     if (!input.trim() || isLoading) return;
     
+    // حفظ موضع التمرير الحالي
+    const currentScrollPosition = chatContainerRef.current?.scrollTop || 0;
+    
     const currentInput = input;
     setInput("");
     
+    // إضافة رسالة المستخدم
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      content: currentInput,
+      timestamp: new Date(),
+    };
+    
+    // تحديث الرسائل مع الحفاظ على موضع التمرير
+    setMessages(prev => {
+      const updatedMessages = [...prev, userMessage];
+      
+      // استخدام setTimeout للتأكد من تنفيذ هذا الكود بعد تحديث واجهة المستخدم
+      setTimeout(() => {
+        if (chatContainerRef.current) {
+          // إعادة ضبط موضع التمرير إلى ما كان عليه
+          chatContainerRef.current.scrollTop = currentScrollPosition;
+        }
+      }, 0);
+      
+      return updatedMessages;
+    });
+    
+    // الحصول على رد المساعد الذكي
     await getAIResponse(currentInput);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+    
+    // ضبط ارتفاع مساحة النص تلقائيًا
+    e.target.style.height = "42px";
+    const scrollHeight = e.target.scrollHeight;
+    const newHeight = Math.min(Math.max(scrollHeight, 42), 150); // الحد الأدنى 42px والحد الأقصى 150px
+    e.target.style.height = `${newHeight}px`;
   };
 
   const handleSampleQuestion = async (question: string) => {
     if (isLoading) return;
+    
+    // حفظ موضع التمرير الحالي
+    const currentScrollPosition = chatContainerRef.current?.scrollTop || 0;
+    
+    setIsInitialLoad(false); // إيقاف وضع التحميل الأولي عند النقر على سؤال
+    
+    // إضافة رسالة المستخدم
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      content: question,
+      timestamp: new Date(),
+    };
+    
+    // تحديث الرسائل مع الحفاظ على موضع التمرير
+    setMessages(prev => {
+      const updatedMessages = [...prev, userMessage];
+      
+      // استخدام setTimeout للتأكد من تنفيذ هذا الكود بعد تحديث واجهة المستخدم
+      setTimeout(() => {
+        if (chatContainerRef.current) {
+          // إعادة ضبط موضع التمرير إلى ما كان عليه
+          chatContainerRef.current.scrollTop = currentScrollPosition;
+        }
+      }, 0);
+      
+      return updatedMessages;
+    });
+    
+    // الحصول على رد المساعد الذكي
     await getAIResponse(question);
+  };
+
+  const handleManualScroll = () => {
+    setAutoScroll(true);
+    setIsInitialLoad(false);
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
   };
 
   return (
@@ -197,7 +386,7 @@ export function SaudiRealEstateExpert() {
               <GlassCardHeader className="pb-3 pt-4 px-4">
                 <GlassCardTitle className="text-base font-semibold text-primary-foreground dark:text-primary flex items-center gap-2">
                   <Sparkles size={18} className="opacity-80"/>
-                  <span>جرب تسألني عن</span>
+                  <span>اقتراحات للأسئلة</span>
                 </GlassCardTitle>
               </GlassCardHeader>
               <GlassCardContent className="px-3 pb-4">
@@ -226,65 +415,116 @@ export function SaudiRealEstateExpert() {
                 <GlassCardTitle className="flex items-center justify-between">
                   <span className="flex items-center gap-2.5 font-semibold text-lg">
                     <Bot size={22} className="text-primary"/>
-                    <span>البوت العقاري الذكي</span>
+                    <span>أبو محمد مستشارك العقاري الذكي</span>
                   </span>
+                  {!autoScroll && messages.length > 2 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-1.5 hover:bg-primary/10"
+                      onClick={handleManualScroll}
+                    >
+                      <span>↓</span>
+                      <span className="text-xs">التمرير لأسفل</span>
+                    </Button>
+                  )}
                 </GlassCardTitle>
               </GlassCardHeader>
-              <GlassCardContent className="flex-1 overflow-hidden flex flex-col p-0">
-                <div className="flex-1 overflow-y-auto p-5 space-y-5 scrollbar-thin scrollbar-thumb-border hover:scrollbar-thumb-primary/50 scrollbar-track-transparent">
+              <GlassCardContent className="flex-1 overflow-hidden flex flex-col p-0 relative">
+                <div 
+                  ref={chatContainerRef}
+                  className="flex-1 overflow-y-auto py-4 px-4 space-y-4 scrollbar-thin scrollbar-thumb-border hover:scrollbar-thumb-primary/50 scrollbar-track-transparent"
+                >
                   {messages.length === 0 && !isLoading && (
                     <FadeIn delay={300}>
-                      <div className="flex items-start gap-3 justify-start">
-                        <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-tr from-primary to-secondary text-primary-foreground shadow-md">
-                          <Bot size={17} />
+                      <div className="flex flex-col items-center justify-center h-full min-h-[300px] text-center p-6">
+                        <div className="mb-4 p-3 bg-primary/10 rounded-full">
+                          <Bot className="h-6 w-6 text-primary" />
                         </div>
-                        <div className="max-w-[85%] md:max-w-[75%] rounded-xl rounded-bl-none px-4 py-3 shadow-sm bg-background border border-border" dir="rtl">
-                           <p className="text-base font-semibold mb-1">أهلاً بك! أنا أبو محمد، خبيرك العقاري.</p>
-                           <p className="text-sm text-muted-foreground">
-                             اسألني عن أي شيء يخص العقار في السعودية!
-                           </p>
+                        <h3 className="text-lg font-medium mb-2">مرحباً بك في أبو محمد مستشارك العقاري الذكي</h3>
+                        <p className="text-sm text-muted-foreground max-w-md mb-6">
+                          اطرح أي سؤال حول الأمور العقارية وسأقدم لك المعلومات المتوفرة
+                        </p>
+                        <div className="grid grid-cols-2 gap-2 w-full max-w-md">
+                          {sampleQuestions.slice(0, 2).map((question, index) => (
+                            <Button
+                              key={index}
+                              variant="outline"
+                              size="sm"
+                              className="text-sm justify-start text-right truncate"
+                              onClick={() => handleSampleQuestion(question.text)}
+                            >
+                              <span className="mr-1.5">{question.emoji}</span>
+                              <span className="truncate">{question.text}</span>
+                            </Button>
+                          ))}
                         </div>
                       </div>
                     </FadeIn>
                   )}
-                  {messages.map((message) => (
-                    <FadeIn key={message.id} duration={500}>
-                      <div
-                        className={`flex items-end gap-2.5 ${
-                          message.role === "user" ? "justify-end" : "justify-start"
-                        }`}
-                      >
-                        {message.role === "assistant" && (
-                          <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-tr from-primary to-secondary text-primary-foreground shadow-md self-start mt-1">
-                            <Bot size={17} />
+                  
+                  <div className="flex flex-col space-y-4">
+                    {messages.map((message, index) => {
+                      // Skip system messages
+                      if (message.role === "system") return null;
+                      
+                      const isUser = message.role === "user";
+                      const showTimestamp = index === messages.length - 1 || 
+                        messages[index + 1]?.role !== message.role;
+                      
+                      return (
+                        <FadeIn key={message.id} duration={300}>
+                          <div
+                            className={`flex items-end gap-1.5 ${
+                              isUser ? "justify-end" : "justify-start"
+                            } ${index > 0 && messages[index - 1].role === message.role ? "mt-1" : "mt-3"}`}
+                          >
+                            {!isUser && (index === 0 || messages[index - 1].role !== message.role) && (
+                              <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-tr from-primary to-secondary text-primary-foreground shadow-sm self-end mb-1">
+                                <Bot size={16} />
+                              </div>
+                            )}
+                            <div
+                              dir="rtl"
+                              className={`relative max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-2.5 shadow-sm transition-all duration-300 ease-out text-sm leading-relaxed break-words ${
+                                isUser 
+                                  ? "bg-primary text-primary-foreground rounded-br-sm ml-12" 
+                                  : "bg-card border border-border rounded-bl-sm mr-12"
+                              } ${index > 0 && messages[index - 1].role === message.role 
+                                ? isUser ? "rounded-tr-md" : "rounded-tl-md" 
+                                : ""}`}
+                              style={{ whiteSpace: 'pre-wrap' }}
+                            >
+                              {message.content}
+                              
+                              {showTimestamp && (
+                                <div className={`absolute ${isUser ? "-left-6 text-left" : "-right-6 text-right"} -bottom-5 text-[10px] text-muted-foreground opacity-70`}>
+                                  {new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                </div>
+                              )}
+                            </div>
+                            {isUser && (index === 0 || messages[index - 1].role !== message.role) && (
+                              <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-primary/10 text-primary shadow-sm self-end mb-1">
+                                <User size={15} />
+                              </div>
+                            )}
                           </div>
-                        )}
-                        <div
-                          dir="rtl"
-                          className={`max-w-[85%] md:max-w-[75%] rounded-xl px-4 py-3 shadow-md transition-all duration-300 ease-out text-sm leading-relaxed break-words ${
-                            message.role === "user"
-                              ? "bg-primary text-primary-foreground rounded-br-none"
-                              : "bg-gradient-to-br from-background to-primary/5 border border-border rounded-bl-none"
-                          }`}
-                          style={{ whiteSpace: 'pre-wrap' }}
-                        >
-                           {message.content}
-                        </div>
-                        {message.role === "user" && (
-                          <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-muted text-muted-foreground shadow-md self-start mt-1">
-                            <User size={16} />
-                          </div>
-                        )}
-                      </div>
-                    </FadeIn>
-                  ))}
+                        </FadeIn>
+                      );
+                    })}
+                  </div>
+                  
                   {isLoading && (
-                    <FadeIn duration={300}>
-                      <div className="flex items-start gap-3 justify-start pl-11 pb-2">
-                        <div className="bg-background border rounded-xl px-4 py-2.5 shadow-md rounded-bl-none">
+                    <FadeIn duration={200}>
+                      <div className="flex items-start gap-2 mt-3">
+                        <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-tr from-primary to-secondary text-primary-foreground shadow-sm">
+                          <Bot size={16} />
+                        </div>
+                        <div className="bg-card border border-border rounded-2xl rounded-bl-sm px-4 py-2.5 shadow-sm max-w-[85%] md:max-w-[70%]">
                           <div className="flex space-x-2 rtl:space-x-reverse items-center">
-                            <Loader2 size={14} className="text-muted-foreground animate-spin"/>
-                            <span className="text-xs text-muted-foreground">أبو محمد يفكر...</span>
+                            <div className="w-2 h-2 bg-primary/40 rounded-full animate-pulse"></div>
+                            <div className="w-2 h-2 bg-primary/40 rounded-full animate-pulse [animation-delay:0.2s]"></div>
+                            <div className="w-2 h-2 bg-primary/40 rounded-full animate-pulse [animation-delay:0.4s]"></div>
                           </div>
                         </div>
                       </div>
@@ -292,16 +532,32 @@ export function SaudiRealEstateExpert() {
                   )}
                   <div ref={messagesEndRef} />
                 </div>
-                <form onSubmit={handleSubmit} className="mt-auto p-4 border-t bg-background/95 backdrop-blur-sm sticky bottom-0">
-                  <div className="relative">
-                    <Input
-                      placeholder="اسأل أبو محمد..."
+                
+                {/* Fixed scroll button that appears when not at bottom */}
+                {!autoScroll && messages.length > 0 && (
+                  <div className="absolute bottom-24 right-4 z-10">
+                    <Button
+                      size="icon"
+                      className="rounded-full h-10 w-10 shadow-md bg-primary text-primary-foreground hover:bg-primary/90"
+                      onClick={handleManualScroll}
+                    >
+                      <span>↓</span>
+                    </Button>
+                  </div>
+                )}
+                
+                <form onSubmit={handleSubmit} className="p-4 border-t bg-background/95 backdrop-blur-sm sticky bottom-0 mt-auto">
+                  <div className="relative flex items-end">
+                    <textarea
+                      placeholder="اكتب سؤالك هنا..."
                       value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      className="pr-12 pl-4 h-12 text-base rounded-full border-2 border-border focus-visible:border-primary transition-colors duration-200 bg-background shadow-sm"
+                      onChange={handleInputChange}
+                      className="w-full pr-12 pl-4 py-3 text-sm rounded-xl border-2 border-border focus-visible:border-primary transition-colors duration-200 bg-background shadow-sm resize-none overflow-hidden min-h-[50px]"
                       disabled={isLoading}
+                      style={{ height: '42px' }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
                           handleSubmit(e as any);
                         }
                       }}
@@ -312,10 +568,10 @@ export function SaudiRealEstateExpert() {
                           <Button
                             type="submit"
                             size="icon"
-                            className="absolute right-1.5 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 scale-100 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100"
+                            className="absolute left-1.5 bottom-1.5 h-9 w-9 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 disabled:opacity-50"
                             disabled={isLoading || !input.trim()}
                           >
-                            <Send size={16} />
+                            <Send size={16} className="rtl:rotate-180" />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>

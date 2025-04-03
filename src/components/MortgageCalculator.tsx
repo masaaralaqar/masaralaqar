@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { GlassCard, GlassCardContent, GlassCardHeader, GlassCardTitle } from "./ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { Calculator, AlertTriangle, ArrowRight, Check, ArrowLeft, Info } from "lucide-react";
@@ -18,6 +18,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { StepNavigation } from "./mortgage/StepNavigation";
 import { BankComparisonTable } from "./mortgage/BankComparisonTable";
+import { preventScrollOnNavigation, preventAutoScroll } from "@/lib/utils";
 
 export function MortgageCalculator() {
   const { toast } = useToast();
@@ -69,6 +70,11 @@ export function MortgageCalculator() {
     { id: "alinma", name: "مصرف الإنماء", rate: 4.00 },
   ];
 
+  // تطبيق منع التمرير التلقائي عند تحميل المكون
+  useEffect(() => {
+    preventAutoScroll();
+  }, []);
+
   // Get interest rate for the *selected* bank for the main calculation
   const getBankInterestRate = (): number => {
     const selectedBankData = banks.find(bank => bank.id === selectedBank);
@@ -78,12 +84,17 @@ export function MortgageCalculator() {
   // Go to a specific step
   const goToStep = (stepId: StepId) => {
     if (completedSteps.has(stepId)) {
+      // منع التمرير التلقائي عند التنقل بين الخطوات
+      preventScrollOnNavigation();
       setCurrentStep(stepId);
     }
   };
 
   // Move to the next step or complete the form
   const handleNextStep = () => {
+    // منع التمرير التلقائي عند الانتقال للخطوة التالية
+    preventScrollOnNavigation();
+    
     // Mark current step as completed
     setCompletedSteps(prev => {
       const newCompleted = new Set(prev);
@@ -105,6 +116,9 @@ export function MortgageCalculator() {
 
   // Move to the previous step if available
   const handlePreviousStep = () => {
+    // منع التمرير التلقائي عند الرجوع للخطوة السابقة
+    preventScrollOnNavigation();
+    
     const currentIndex = steps.findIndex(step => step.id === currentStep);
     if (currentIndex > 0) {
       setCurrentStep(steps[currentIndex - 1].id);

@@ -1,7 +1,7 @@
 {
   "short_name": "مسار العقار",
-  "name": "مسار العقار - حاسبة التمويل العقاري",
-  "description": "احسب تمويلك العقاري واستشر مستشارنا العقاري الذكي",
+  "name": "مسار العقار - دليلك الذكي في عالم العقار",
+  "description": "منصة سعودية تساعد المهتمين بالعقار في اكتساب المعرفة الصحيحة",
   "icons": [
     {
       "src": "favicon.ico",
@@ -28,5 +28,5 @@
   "dir": "rtl",
   "lang": "ar",
   "orientation": "portrait",
-  "categories": ["finance", "utilities"]
+  "categories": ["real-estate", "education", "utilities"]
 } 
