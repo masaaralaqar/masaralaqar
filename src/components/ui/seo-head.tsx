@@ -16,21 +16,21 @@ export function SEO({
   title = 'مسار العقار - دليلك الذكي في عالم العقار',
   description = 'منصة سعودية تساعد المهتمين بالعقار في اكتساب المعرفة الصحيحة، عبر دليل عقاري شامل، وبوت ذكي يجاوب على استفساراتك، وأدوات تسهّل عليك فهم التمويل، الاستثمار، وصيانة المنزل.',
   canonical,
-  ogImage = 'https://masaraqar.com/assets/og-image.png',
+  ogImage = '/assets/og-image.png',
   ogType = 'website',
   twitterCard = 'summary_large_image',
   schema,
   noIndex = false,
 }: SEOProps) {
   const location = useLocation();
-  const currentUrl = `https://masaraqar.com${location.pathname}`;
+  const currentUrl = `${location.pathname}`;
   const canonicalUrl = canonical || currentUrl;
 
   useEffect(() => {
-    // Actualizar el título de la página
+    // تحديث عنوان الصفحة
     document.title = title;
 
-    // Actualizar la meta descripción
+    // تحديث وصف الصفحة
     let metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
       metaDescription.setAttribute('content', description);
@@ -41,20 +41,20 @@ export function SEO({
       document.head.appendChild(metaDescription);
     }
 
-    // Actualizar etiquetas Open Graph
+    // تحديث علامات Open Graph
     updateMetaTag('property', 'og:title', title);
     updateMetaTag('property', 'og:description', description);
     updateMetaTag('property', 'og:url', canonicalUrl);
     updateMetaTag('property', 'og:image', ogImage);
     updateMetaTag('property', 'og:type', ogType);
 
-    // Actualizar etiquetas Twitter
+    // تحديث علامات Twitter
     updateMetaTag('name', 'twitter:title', title);
     updateMetaTag('name', 'twitter:description', description);
     updateMetaTag('name', 'twitter:image', ogImage);
     updateMetaTag('name', 'twitter:card', twitterCard);
 
-    // Actualizar etiqueta canónica
+    // تحديث الرابط الأساسي
     let canonicalTag = document.querySelector('link[rel="canonical"]');
     if (canonicalTag) {
       canonicalTag.setAttribute('href', canonicalUrl);
@@ -65,10 +65,10 @@ export function SEO({
       document.head.appendChild(canonicalTag);
     }
 
-    // Controlar indexación
+    // التحكم في الفهرسة
     updateMetaTag('name', 'robots', noIndex ? 'noindex, nofollow' : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
 
-    // Agregar schema.org JSON-LD si se proporciona
+    // إضافة مخطط Schema.org إذا تم توفيره
     if (schema) {
       let schemaScript = document.querySelector('script[type="application/ld+json"]');
       if (schemaScript) {
@@ -81,9 +81,9 @@ export function SEO({
       }
     }
 
-    // Limpieza al desmontar el componente
+    // تنظيف عند إلغاء تحميل المكون
     return () => {
-      // Opcional: restaurar valores predeterminados al salir
+      // اختياري: استعادة القيم الافتراضية عند الخروج
     };
   }, [title, description, canonicalUrl, ogImage, ogType, twitterCard, schema, noIndex]);
 
@@ -103,7 +103,7 @@ export function SEO({
     }
   };
 
-  // Este componente no renderiza nada visible
+  // هذا المكون لا يعرض أي شيء مرئي
   return null;
 }
 

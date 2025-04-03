@@ -26,16 +26,16 @@ export default function Index() {
     }
   };
 
-  // Schema.org structured data para la página principal
+  // بيانات Schema.org المنظمة للصفحة الرئيسية
   const homePageSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "url": "https://masaraqar.com/",
+    "url": "/",
     "name": "مسار العقار - دليلك الذكي في عالم العقار",
     "description": "منصة سعودية تساعد المهتمين بالعقار في اكتساب المعرفة الصحيحة، عبر دليل عقاري شامل، وبوت ذكي يجاوب على استفساراتك، وأدوات تسهّل عليك فهم التمويل، الاستثمار، وصيانة المنزل.",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://masaraqar.com/search?q={search_term_string}",
+      "target": "/search?q={search_term_string}",
       "query-input": "required name=search_term_string"
     }
   };

@@ -6,67 +6,67 @@
   xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
             http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
-  <!-- Página principal -->
+  <!-- الصفحة الرئيسية -->
   <url>
-    <loc>https://masaraqar.com/</loc>
+    <loc>/</loc>
     <lastmod>2024-04-06</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
-  <!-- Página del asistente IA -->
+  <!-- صفحة المساعد الذكي -->
   <url>
-    <loc>https://masaraqar.com/ai-assistant</loc>
+    <loc>/ai-assistant</loc>
     <lastmod>2024-04-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <mobile:mobile/>
   </url>
 
-  <!-- Calculadora de financiamiento -->
+  <!-- حاسبة التمويل -->
   <url>
-    <loc>https://masaraqar.com/calculator</loc>
+    <loc>/calculator</loc>
     <lastmod>2024-04-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <mobile:mobile/>
   </url>
 
-  <!-- Comparación de bancos -->
+  <!-- مقارنة البنوك -->
   <url>
-    <loc>https://masaraqar.com/bank-comparison</loc>
+    <loc>/bank-comparison</loc>
     <lastmod>2024-04-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <mobile:mobile/>
   </url>
 
-  <!-- Asesor inmobiliario -->
+  <!-- المستشار العقاري -->
   <url>
-    <loc>https://masaraqar.com/real-estate-advisor</loc>
+    <loc>/real-estate-advisor</loc>
     <lastmod>2024-04-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
     <mobile:mobile/>
   </url>
 
-  <!-- Páginas legales -->
+  <!-- الصفحات القانونية -->
   <url>
-    <loc>https://masaraqar.com/privacy-policy</loc>
+    <loc>/privacy-policy</loc>
     <lastmod>2024-04-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://masaraqar.com/terms-conditions</loc>
+    <loc>/terms-conditions</loc>
     <lastmod>2024-04-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
-  <!-- Página de login (más baja prioridad por ser protegida) -->
+  <!-- صفحة تسجيل الدخول (أولوية أقل لأنها محمية) -->
   <url>
-    <loc>https://masaraqar.com/login</loc>
+    <loc>/login</loc>
     <lastmod>2024-04-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>

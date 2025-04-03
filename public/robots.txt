@@ -1,7 +1,7 @@
-# robots.txt para masaraqar.com
-# Última actualización: 2024-04-06
+# robots.txt للموقع
+# تحديث: 2024-04-06
 
-# Permitir a todos los robots acceder al sitio con algunas restricciones
+# السماح لجميع الروبوتات بالوصول للموقع مع بعض القيود
 User-agent: *
 Allow: /
 Disallow: /login
@@ -12,26 +12,26 @@ Disallow: /private/
 Disallow: /*?*
 Disallow: /*utm_*
 
-# Reglas específicas para Googlebot
+# قواعد خاصة بـ Googlebot
 User-agent: Googlebot
 Allow: /
 Disallow: /login
 Disallow: /admin
 Crawl-delay: 1
 
-# Reglas específicas para Bingbot
+# قواعد خاصة بـ Bingbot
 User-agent: Bingbot
 Allow: /
 Disallow: /login
 Disallow: /admin
 Crawl-delay: 2
 
-# Reglas para bots de redes sociales
+# قواعد لروبوتات شبكات التواصل الاجتماعي
 User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
 
-# Ubicación del sitemap
-Sitemap: https://masaraqar.com/sitemap.xml
+# موقع ملف Sitemap
+Sitemap: /sitemap.xml

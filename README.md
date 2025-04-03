@@ -4,7 +4,7 @@
 
 ## الموقع
 
-**URL**: https://masar123.vercel.app
+**URL**: [سيتم إضافة الدومين قريبًا]
 
 ## المميزات
 
@@ -27,8 +27,8 @@
 
 1. انسخ المشروع:
 ```bash
-git clone https://github.com/yourusername/masar-al-aqar.git
-cd masar-al-aqar
+git clone https://github.com/masaaralaqar/masaralaqar.git
+cd masaralaqar
 ```
 
 2. ثبّت المتطلبات:
@@ -43,7 +43,7 @@ npm run dev
 
 4. افتح المتصفح على العنوان التالي:
 ```
-http://localhost:8080
+http://localhost:3000
 ```
 
 ## النشر
@@ -70,5 +70,5 @@ http://localhost:8080
 
 ## الاتصال
 
-- البريد الإلكتروني: support@masar123.vercel.app
+- البريد الإلكتروني: [سيتم تحديثه قريبًا]
 - تويتر: [@masaraqar](https://twitter.com/masaraqar)
