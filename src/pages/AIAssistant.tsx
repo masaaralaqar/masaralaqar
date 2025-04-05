@@ -56,7 +56,7 @@ export default function AIAssistant() {
         return [{
           id: "assistant-welcome",
           role: "assistant" as const,
-          content: `يا هلا ومرحبا بك يا ${userName}! أنا أبو محمد، خبيرك العقاري السعودي. أقدر أساعدك بأي استفسار عن العقار والاستثمار العقاري أو صيانة المنزل. يلا عاد، وش تبي تعرف اليوم؟`,
+          content: `حيّاك الله يا ${userName}! أنا أبو محمد من الرياض، مستشارك في سوق العقار السعودي. مستعد أساعدك في الإسكان والتمويل والاستثمار والصيانة وكل شي يخص العقار. وش المعلومة اللي تدوّر عليها اليوم؟`,
           timestamp: new Date(),
         }];
       }
@@ -65,7 +65,7 @@ export default function AIAssistant() {
       return [{
         id: "assistant-welcome",
         role: "assistant" as const,
-        content: `يا هلا ومرحبا بك! أنا أبو محمد، خبيرك العقاري السعودي. أقدر أساعدك بأي استفسار عن العقار والاستثمار العقاري أو صيانة المنزل. يلا عاد، وش تبي تعرف اليوم؟`,
+        content: `حيّاك الله يالغالي! أنا أبو محمد من الرياض، مستشارك في سوق العقار السعودي. مستعد أساعدك في الإسكان والتمويل والاستثمار والصيانة وكل شي يخص العقار. وش المعلومة اللي تدوّر عليها اليوم؟`,
         timestamp: new Date(),
       }];
     } catch (error) {
@@ -191,7 +191,7 @@ export default function AIAssistant() {
       - تتحدث بصيغة المتكلم المفرد (أنا، أقدر، عندي)`;
       
       // الرد بلهجة سعودية
-      const responseText = `يمديني أساعدك في استفسارك عن العقار، وش اللي تبي تعرفه بالضبط؟`;
+      const responseText = `ممتاز! على راسي. وش أقدر أفيدك فيه بخصوص العقار؟`;
       
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
@@ -246,9 +246,9 @@ export default function AIAssistant() {
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
                 <Bot className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-medium">يا هلا ومرحبا بك في المستشار العقاري</h3>
+              <h3 className="text-xl font-medium">حيّاك الله في مستشارك العقاري</h3>
               <p className="text-muted-foreground max-w-md">
-                أنا أبو محمد، أقدر أساعدك بأي استفسار عن العقار والاستثمار العقاري أو صيانة المنزل. يلا عاد، وش تبي تعرف اليوم؟
+                أنا أبو محمد من الرياض، مستعد أساعدك في الإسكان والتمويل والاستثمار والصيانة وكل شي يخص العقار. وش المعلومة اللي تدوّر عليها اليوم؟
               </p>
             </div>
           )}
