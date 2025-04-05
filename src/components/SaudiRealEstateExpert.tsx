@@ -506,6 +506,7 @@ export function SaudiRealEstateExpert() {
                 <div 
                   ref={chatContainerRef}
                   className="flex-1 overflow-y-auto py-4 px-4 space-y-4 scrollbar-thin scrollbar-thumb-border hover:scrollbar-thumb-primary/50 scrollbar-track-transparent"
+                  style={{ overscrollBehavior: 'contain' }}
                 >
                   {messages.length === 0 && !isLoading && (
                     <FadeIn delay={300}>
@@ -544,7 +545,7 @@ export function SaudiRealEstateExpert() {
                             )}
                             <div
                               dir="rtl"
-                              className={`relative max-w-[90%] sm:max-w-[85%] md:max-w-[75%] rounded-2xl px-4 py-2.5 shadow-sm transition-all duration-300 ease-out text-sm leading-relaxed break-words whitespace-pre-wrap ${
+                              className={`relative max-w-[90%] sm:max-w-[85%] md:max-w-[75%] rounded-2xl px-4 py-2.5 shadow-sm transition-all duration-300 ease-out text-sm md:text-base leading-relaxed break-words whitespace-pre-wrap ${
                                 isUser 
                                   ? "bg-primary text-primary-foreground rounded-br-sm ml-12" 
                                   : "bg-card border border-border rounded-bl-sm mr-12"
@@ -612,10 +613,11 @@ export function SaudiRealEstateExpert() {
                       onChange={handleInputChange}
                       className="w-full pr-12 pl-4 py-3 text-sm rounded-xl border-2 border-border focus-visible:border-primary transition-colors duration-200 bg-background shadow-sm resize-none overflow-hidden min-h-[50px] whitespace-pre-wrap leading-relaxed"
                       disabled={isLoading}
-                      style={{ height: '42px' }}
+                      style={{ height: '42px', maxHeight: '150px' }}
                       onInput={(e) => {
                         e.currentTarget.style.height = "auto";
-                        e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
+                        const newHeight = Math.min(Math.max(e.currentTarget.scrollHeight, 42), 150);
+                        e.currentTarget.style.height = `${newHeight}px`;
                       }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {

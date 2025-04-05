@@ -238,7 +238,7 @@ export default function AIAssistant() {
         <div 
           ref={chatContainerRef}
           className="flex-1 overflow-y-auto px-3 sm:px-4 md:px-6 py-4 space-y-4 md:space-y-6 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent"
-          style={{ direction: 'rtl' }}
+          style={{ direction: 'rtl', overscrollBehavior: 'contain' }}
           onScroll={handleScroll}
         >
           {messages.length === 0 && !isOverallLoading && (
@@ -268,7 +268,7 @@ export default function AIAssistant() {
               )}
               <div
                 className={cn(
-                  "rounded-2xl px-4 py-3 md:px-5 md:py-4 w-full max-w-[90%] sm:max-w-[85%] md:max-w-[75%] break-words shadow-md",
+                  "rounded-2xl px-4 py-3 md:px-5 md:py-4 w-full max-w-[90%] sm:max-w-[85%] md:max-w-[75%] break-words shadow-md whitespace-pre-wrap text-sm md:text-base leading-relaxed",
                   message.role === "assistant"
                     ? "bg-card border border-border text-card-foreground"
                     : "bg-primary text-primary-foreground",
@@ -314,10 +314,11 @@ export default function AIAssistant() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="اكتب سؤالك هنا..."
-              className="flex-1 resize-none overflow-y-auto text-right py-4 px-4 text-base rounded-2xl border-muted focus:border-primary shadow-sm w-full min-h-[44px] max-h-40"
+              className="flex-1 resize-none overflow-y-auto text-right py-4 px-4 text-base rounded-2xl border-muted focus:border-primary shadow-sm w-full min-h-[44px] max-h-40 whitespace-pre-wrap leading-relaxed"
               onInput={(e) => {
                 e.currentTarget.style.height = "auto";
-                e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
+                const newHeight = Math.min(Math.max(e.currentTarget.scrollHeight, 44), 160);
+                e.currentTarget.style.height = `${newHeight}px`;
               }}
               disabled={isOverallLoading}
             />
