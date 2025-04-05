@@ -104,7 +104,7 @@ export default function Login() {
           <CardHeader className="text-center space-y-8">
             <div className="flex justify-center">
               <img 
-                src={import.meta.env.MODE === 'production' ? '/masaralaqar/assets/new-logo.svg' : '/assets/new-logo.svg'} 
+                src={import.meta.env.MODE === 'production' ? '/masaralaqar/logo.svg' : '/logo.svg'} 
                 alt="مسار العقار" 
                 className="h-40 w-auto"
               />

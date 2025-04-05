@@ -53,7 +53,7 @@ export default function Header() {
           {/* Logo - تحديث مسار الصورة */}
           <Link to="/" className="flex items-center">
             <img 
-              src={import.meta.env.MODE === 'production' ? '/masaralaqar/assets/new-logo.svg' : '/assets/new-logo.svg'} 
+              src={import.meta.env.MODE === 'production' ? '/masaralaqar/logo.svg' : '/logo.svg'} 
               alt="مسار العقار" 
               className="h-20 md:h-32 w-auto"
             />
