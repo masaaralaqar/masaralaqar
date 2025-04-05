@@ -52,11 +52,13 @@ export default function Header() {
         <div className="container flex h-16 items-center justify-between">
           {/* Logo - تحديث مسار الصورة */}
           <Link to="/" className="flex items-center">
-            <img 
-              src={import.meta.env.MODE === 'production' ? '/masaralaqar/logo.svg' : '/logo.svg'} 
-              alt="مسار العقار" 
-              className="h-20 md:h-32 w-auto"
-            />
+            <div className="py-2 px-1 flex items-center justify-center">
+              <img 
+                src={import.meta.env.MODE === 'production' ? '/masaralaqar/logo.svg' : '/logo.svg'} 
+                alt="مسار العقار" 
+                className="h-10 sm:h-14 md:h-16 w-auto object-contain"
+              />
+            </div>
           </Link>
 
           {/* عرض زر الصفحة الرئيسية فقط في صفحة تسجيل الدخول */}

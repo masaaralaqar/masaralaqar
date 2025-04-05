@@ -102,12 +102,14 @@ export default function Login() {
       <main className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <Card className="w-full max-w-lg">
           <CardHeader className="text-center space-y-8">
-            <div className="flex justify-center">
-              <img 
-                src={import.meta.env.MODE === 'production' ? '/masaralaqar/logo.svg' : '/logo.svg'} 
-                alt="مسار العقار" 
-                className="h-40 w-auto"
-              />
+            <div className="flex justify-center py-4">
+              <div className="p-3 bg-white/5 rounded-xl shadow-sm flex items-center justify-center">
+                <img 
+                  src={import.meta.env.MODE === 'production' ? '/masaralaqar/logo.svg' : '/logo.svg'} 
+                  alt="مسار العقار" 
+                  className="h-24 sm:h-32 md:h-40 w-auto object-contain"
+                />
+              </div>
             </div>
             <div className="space-y-2">
               <CardTitle className="text-3xl font-bold">مرحباً بك في مسار العقار</CardTitle>
