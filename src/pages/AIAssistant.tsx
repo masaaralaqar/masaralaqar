@@ -30,17 +30,51 @@ export default function AIAssistant() {
     if (!isOverallLoading) {
       let foundName = null;
       
-      if (user && user.name) {
-        foundName = user.name;
-      } 
-      else if (localStorage.getItem("userName")) {
-        foundName = localStorage.getItem("userName");
-      } 
-      else if (sessionStorage.getItem("userName")) {
-        foundName = sessionStorage.getItem("userName");
+      try {
+        // 1. محاولة الحصول على الاسم من كائن المستخدم
+        if (user && user.name && typeof user.name === 'string' && user.name.trim() !== '') {
+          foundName = user.name.trim();
+        } 
+        // 2. محاولة الحصول من localStorage بمفتاح userName
+        else if (localStorage.getItem("userName")) {
+          const storedName = localStorage.getItem("userName");
+          if (storedName && storedName.trim() !== '') {
+            foundName = storedName.trim();
+          }
+        } 
+        // 3. محاولة الحصول من localStorage بمفتاح username (التوافق مع الكود القديم)
+        else if (localStorage.getItem("username")) {
+          const storedName = localStorage.getItem("username");
+          if (storedName && storedName.trim() !== '') {
+            foundName = storedName.trim();
+          }
+        }
+        // 4. محاولة الحصول من sessionStorage
+        else if (sessionStorage.getItem("userName")) {
+          const storedName = sessionStorage.getItem("userName");
+          if (storedName && storedName.trim() !== '') {
+            foundName = storedName.trim();
+          }
+        }
+        // 5. محاولة الحصول من كائن المستخدم المخزن
+        else {
+          const storedUser = localStorage.getItem("user");
+          if (storedUser) {
+            try {
+              const parsedUser = JSON.parse(storedUser);
+              if (parsedUser && parsedUser.name && typeof parsedUser.name === 'string' && parsedUser.name.trim() !== '') {
+                foundName = parsedUser.name.trim();
+              }
+            } catch (parseError) {
+              console.error("خطأ في تحليل بيانات المستخدم:", parseError);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("خطأ أثناء محاولة الحصول على اسم المستخدم:", error);
       }
       
-      if (foundName && typeof foundName === 'string' && foundName.trim() !== '') {
+      if (foundName) {
         setDisplayName(foundName);
       } else {
         setDisplayName("الزائر العزيز");

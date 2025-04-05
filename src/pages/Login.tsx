@@ -56,7 +56,8 @@ export default function Login() {
       setLoading(true);
       const success = await login(name, password);
       if (success) {
-        localStorage.setItem("username", name); // ✅ حفظ الاسم بعد الدخول
+        localStorage.setItem("userName", name);
+        localStorage.setItem("username", name);
         setAttempts(0);
         // تم التوجيه في وظيفة تسجيل الدخول
       } else {

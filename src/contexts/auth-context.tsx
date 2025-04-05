@@ -217,12 +217,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           lastActive: new Date().getTime()
         };
         
-        // تخزين اسم المستخدم في التخزين المحلي مباشرة للسهولة
+        // تخزين اسم المستخدم في التخزين المحلي بجميع الصيغ المحتملة لضمان التوافق
         safeSetItem("userName", cleanName);
+        safeSetItem("username", cleanName); // للتوافق مع الكود القديم
         
         // تخزين في sessionStorage أيضًا للسهولة
         try {
           sessionStorage.setItem("userName", cleanName);
+          sessionStorage.setItem("username", cleanName); // للتوافق مع الكود القديم
         } catch (e) {
           console.error('فشل في تخزين الاسم في sessionStorage:', e);
         }
@@ -238,6 +240,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         };
         
         safeSetItem("user_session", encryptData(sessionData));
+        safeSetItem("user", JSON.stringify(authenticatedUser)); // تخزين بيانات المستخدم مباشرة أيضًا
         
         toast({
           title: `أهلاً بك ${cleanName}`,
@@ -284,6 +287,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // إزالة البيانات من sessionStorage أيضًا
     try {
       sessionStorage.removeItem("userName");
+      sessionStorage.removeItem("username");
     } catch (e) {
       console.error('فشل في إزالة الاسم من sessionStorage:', e);
     }

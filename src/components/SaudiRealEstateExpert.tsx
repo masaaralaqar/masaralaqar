@@ -486,14 +486,13 @@ export function SaudiRealEstateExpert() {
                             )}
                             <div
                               dir="rtl"
-                              className={`relative max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-2.5 shadow-sm transition-all duration-300 ease-out text-sm leading-relaxed break-words ${
+                              className={`relative max-w-[90%] sm:max-w-[85%] md:max-w-[75%] rounded-2xl px-4 py-2.5 shadow-sm transition-all duration-300 ease-out text-sm leading-relaxed break-words whitespace-pre-wrap ${
                                 isUser 
                                   ? "bg-primary text-primary-foreground rounded-br-sm ml-12" 
                                   : "bg-card border border-border rounded-bl-sm mr-12"
                               } ${index > 0 && messages[index - 1].role === message.role 
                                 ? isUser ? "rounded-tr-md" : "rounded-tl-md" 
                                 : ""}`}
-                              style={{ whiteSpace: 'pre-wrap' }}
                             >
                               {message.content}
                               
@@ -549,12 +548,17 @@ export function SaudiRealEstateExpert() {
                 <form onSubmit={handleSubmit} className="p-4 border-t bg-background/95 backdrop-blur-sm sticky bottom-0 mt-auto">
                   <div className="relative flex items-end">
                     <textarea
+                      ref={inputRef}
                       placeholder="اكتب سؤالك هنا..."
                       value={input}
                       onChange={handleInputChange}
-                      className="w-full pr-12 pl-4 py-3 text-sm rounded-xl border-2 border-border focus-visible:border-primary transition-colors duration-200 bg-background shadow-sm resize-none overflow-hidden min-h-[50px]"
+                      className="w-full pr-12 pl-4 py-3 text-sm rounded-xl border-2 border-border focus-visible:border-primary transition-colors duration-200 bg-background shadow-sm resize-none overflow-hidden min-h-[50px] whitespace-pre-wrap leading-relaxed"
                       disabled={isLoading}
                       style={{ height: '42px' }}
+                      onInput={(e) => {
+                        e.currentTarget.style.height = "auto";
+                        e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
                           e.preventDefault();
