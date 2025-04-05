@@ -482,12 +482,12 @@ export function SaudiRealEstateExpert() {
           </div>
 
           <div className="md:col-span-2 order-1 md:order-2">
-            <div className="flex flex-col h-[85vh] bg-card rounded-xl shadow-xl border overflow-hidden">
-              <GlassCardHeader className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-10 px-5 py-4">
+            <div className="flex flex-col h-[85vh] sm:h-[85vh] bg-card rounded-xl shadow-xl border overflow-hidden">
+              <GlassCardHeader className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-10 px-3 sm:px-5 py-3 sm:py-4">
                 <GlassCardTitle className="flex items-center justify-between">
-                  <span className="flex items-center gap-2.5 font-semibold text-lg">
-                    <Bot size={22} className="text-primary"/>
-                    <span>أبو محمد مستشارك العقاري الذكي</span>
+                  <span className="flex items-center gap-2 sm:gap-2.5 font-semibold text-base sm:text-lg">
+                    <Bot size={20} className="text-primary"/>
+                    <span>أبو محمد مستشارك العقاري</span>
                   </span>
                   {!autoScroll && messages.length > 2 && (
                     <Button
@@ -497,7 +497,7 @@ export function SaudiRealEstateExpert() {
                       onClick={handleManualScroll}
                     >
                       <span>↓</span>
-                      <span className="text-xs">التمرير لأسفل</span>
+                      <span className="text-xs">التمرير</span>
                     </Button>
                   )}
                 </GlassCardTitle>
@@ -505,7 +505,7 @@ export function SaudiRealEstateExpert() {
               <GlassCardContent className="flex-1 overflow-hidden flex flex-col p-0 relative">
                 <div 
                   ref={chatContainerRef}
-                  className="flex-1 overflow-y-auto py-4 px-4 space-y-4 scrollbar-thin scrollbar-thumb-border hover:scrollbar-thumb-primary/50 scrollbar-track-transparent"
+                  className="flex-1 overflow-y-auto py-3 sm:py-4 px-3 sm:px-4 space-y-3 sm:space-y-4 scrollbar-thin scrollbar-thumb-border hover:scrollbar-thumb-primary/50 scrollbar-track-transparent"
                   style={{ overscrollBehavior: 'contain' }}
                 >
                   {messages.length === 0 && !isLoading && (
@@ -539,16 +539,16 @@ export function SaudiRealEstateExpert() {
                             } ${index > 0 && messages[index - 1].role === message.role ? "mt-1" : "mt-3"}`}
                           >
                             {!isUser && (index === 0 || messages[index - 1].role !== message.role) && (
-                              <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-tr from-primary to-secondary text-primary-foreground shadow-sm self-end mb-1">
-                                <Bot size={16} />
+                              <div className="shrink-0 w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-gradient-to-tr from-primary to-secondary text-primary-foreground shadow-sm self-end mb-1">
+                                <Bot size={14} className="sm:size-16" />
                               </div>
                             )}
                             <div
                               dir="rtl"
-                              className={`relative max-w-[90%] sm:max-w-[85%] md:max-w-[75%] rounded-2xl px-4 py-2.5 shadow-sm transition-all duration-300 ease-out text-sm md:text-base leading-relaxed break-words whitespace-pre-wrap ${
+                              className={`relative max-w-[95%] sm:max-w-[90%] md:max-w-[85%] rounded-2xl px-3 py-2.5 sm:px-4 sm:py-3 md:px-5 md:py-4 shadow-sm transition-all duration-300 ease-out text-sm md:text-base leading-relaxed break-words whitespace-pre-wrap ${
                                 isUser 
-                                  ? "bg-primary text-primary-foreground rounded-br-sm ml-12" 
-                                  : "bg-card border border-border rounded-bl-sm mr-12"
+                                  ? "bg-primary text-primary-foreground rounded-br-sm ml-8 sm:ml-12" 
+                                  : "bg-card border border-border rounded-bl-sm mr-8 sm:mr-12"
                               } ${index > 0 && messages[index - 1].role === message.role 
                                 ? isUser ? "rounded-tr-md" : "rounded-tl-md" 
                                 : ""}`}
@@ -562,8 +562,8 @@ export function SaudiRealEstateExpert() {
                               )}
                             </div>
                             {isUser && (index === 0 || messages[index - 1].role !== message.role) && (
-                              <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-primary/10 text-primary shadow-sm self-end mb-1">
-                                <User size={15} />
+                              <div className="shrink-0 w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-primary/10 text-primary shadow-sm self-end mb-1">
+                                <User size={13} className="sm:size-15" />
                               </div>
                             )}
                           </div>
@@ -604,14 +604,14 @@ export function SaudiRealEstateExpert() {
                   </div>
                 )}
                 
-                <form onSubmit={handleSubmit} className="p-4 border-t bg-background/95 backdrop-blur-sm sticky bottom-0 mt-auto">
+                <form onSubmit={handleSubmit} className="p-2 sm:p-4 border-t bg-background/95 backdrop-blur-sm sticky bottom-0 mt-auto">
                   <div className="relative flex items-end">
                     <textarea
                       ref={inputRef}
                       placeholder="اكتب سؤالك هنا..."
                       value={input}
                       onChange={handleInputChange}
-                      className="w-full pr-12 pl-4 py-3 text-sm rounded-xl border-2 border-border focus-visible:border-primary transition-colors duration-200 bg-background shadow-sm resize-none overflow-hidden min-h-[50px] whitespace-pre-wrap leading-relaxed"
+                      className="w-full pr-10 sm:pr-12 pl-2 sm:pl-4 py-2 sm:py-3 text-sm rounded-xl border-2 border-border focus-visible:border-primary transition-colors duration-200 bg-background shadow-sm resize-none overflow-hidden min-h-[42px] whitespace-pre-wrap leading-relaxed"
                       disabled={isLoading}
                       style={{ height: '42px', maxHeight: '150px' }}
                       onInput={(e) => {
@@ -632,7 +632,7 @@ export function SaudiRealEstateExpert() {
                           <Button
                             type="submit"
                             size="icon"
-                            className="absolute left-1.5 bottom-1.5 h-9 w-9 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 disabled:opacity-50"
+                            className="absolute left-1 sm:left-1.5 bottom-1 sm:bottom-1.5 h-8 w-8 sm:h-9 sm:w-9 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 disabled:opacity-50"
                             disabled={isLoading || !input.trim()}
                           >
                             <Send size={16} className="rtl:rotate-180" />

@@ -218,26 +218,26 @@ export default function AIAssistant() {
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] max-h-[calc(100vh-4rem)] bg-gradient-to-b from-background to-muted/30">
       <Card className="h-full flex-1 flex flex-col mx-auto w-full max-w-3xl bg-card/80 backdrop-blur-sm shadow-lg rounded-none sm:rounded-xl sm:my-4 border-muted">
-        <CardHeader className="py-3 px-4 md:px-6 border-b bg-muted/30">
+        <CardHeader className="py-2 sm:py-3 px-3 sm:px-4 md:px-6 border-b bg-muted/30">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg md:text-xl font-bold flex items-center gap-2">
-              <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
-                <Bot className="h-5 w-5 text-primary" />
+            <CardTitle className="text-base sm:text-lg md:text-xl font-bold flex items-center gap-1.5 sm:gap-2">
+              <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-primary/10 flex items-center justify-center">
+                <Bot className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               </div>
               <div className="flex flex-col">
-                <span>المستشار العقاري الذكي</span>
-                <span className="text-xs font-normal text-muted-foreground">
+                <span>المستشار العقاري</span>
+                <span className="text-[10px] sm:text-xs font-normal text-muted-foreground">
                   {isOverallLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <span className="h-2 w-2 rounded-full bg-green-500"></span>} متصل
                 </span>
               </div>
             </CardTitle>
-            <Button variant="ghost" size="icon" onClick={resetChat}><RefreshCw className="h-4 w-4" /></Button>
+            <Button variant="ghost" size="icon" onClick={resetChat}><RefreshCw className="h-3.5 w-3.5 sm:h-4 sm:w-4" /></Button>
           </div>
         </CardHeader>
 
         <div 
           ref={chatContainerRef}
-          className="flex-1 overflow-y-auto px-3 sm:px-4 md:px-6 py-4 space-y-4 md:space-y-6 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent"
+          className="flex-1 overflow-y-auto px-2 sm:px-3 md:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4 md:space-y-6 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent"
           style={{ direction: 'rtl', overscrollBehavior: 'contain' }}
           onScroll={handleScroll}
         >
@@ -268,7 +268,7 @@ export default function AIAssistant() {
               )}
               <div
                 className={cn(
-                  "rounded-2xl px-4 py-3 md:px-5 md:py-4 w-full max-w-[90%] sm:max-w-[85%] md:max-w-[75%] break-words shadow-md whitespace-pre-wrap text-sm md:text-base leading-relaxed",
+                  "rounded-2xl px-3 py-2.5 sm:px-4 sm:py-3 md:px-5 md:py-4 w-full max-w-[95%] sm:max-w-[90%] md:max-w-[85%] break-words shadow-md whitespace-pre-wrap text-sm md:text-base leading-relaxed",
                   message.role === "assistant"
                     ? "bg-card border border-border text-card-foreground"
                     : "bg-primary text-primary-foreground",
@@ -308,16 +308,16 @@ export default function AIAssistant() {
           )}
         </div>
 
-        <div className="p-3 sm:p-4 md:p-6 border-t bg-background/90 backdrop-blur">
+        <div className="p-2 sm:p-3 md:p-6 border-t bg-background/90 backdrop-blur">
           <form onSubmit={handleSubmit} className="flex gap-2 md:gap-3">
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="اكتب سؤالك هنا..."
-              className="flex-1 resize-none overflow-y-auto text-right py-4 px-4 text-base rounded-2xl border-muted focus:border-primary shadow-sm w-full min-h-[44px] max-h-40 whitespace-pre-wrap leading-relaxed"
+              className="flex-1 resize-none overflow-y-auto text-right py-2 sm:py-4 px-3 sm:px-4 text-sm sm:text-base rounded-2xl border-muted focus:border-primary shadow-sm w-full min-h-[40px] sm:min-h-[44px] max-h-40 whitespace-pre-wrap leading-relaxed"
               onInput={(e) => {
                 e.currentTarget.style.height = "auto";
-                const newHeight = Math.min(Math.max(e.currentTarget.scrollHeight, 44), 160);
+                const newHeight = Math.min(Math.max(e.currentTarget.scrollHeight, 40), 160);
                 e.currentTarget.style.height = `${newHeight}px`;
               }}
               disabled={isOverallLoading}
@@ -326,13 +326,13 @@ export default function AIAssistant() {
               type="submit" 
               disabled={isLoading || !input.trim() || isOverallLoading}
               size="lg"
-              className="px-4 h-auto rounded-2xl text-base flex items-center gap-2 shadow-sm"
+              className="px-3 sm:px-4 h-auto rounded-2xl text-sm sm:text-base flex items-center gap-1.5 sm:gap-2 shadow-sm"
             >
               {isLoading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
               ) : (
                 <>
-                  <Send className="h-5 w-5" />
+                  <Send className="h-4 w-4 sm:h-5 sm:w-5" />
                   <span className="hidden sm:inline">إرسال</span>
                 </>
               )}
