@@ -46,8 +46,67 @@ export function SaudiRealEstateExpert() {
   const { toast } = useToast();
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>(() => {
-    // سنقوم بإزالة رسالة الترحيب تماماً وعدم إنشاء أي رسائل افتراضية
-    return [];
+    // إضافة رسالة ترحيب بلهجة سعودية باستخدام اسم المستخدم
+    try {
+      // محاولة الحصول على اسم المستخدم من جميع المصادر المحتملة
+      let userName = null;
+      
+      // 1. من كائن المستخدم المخزن
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        try {
+          const parsedUser = JSON.parse(storedUser);
+          if (parsedUser && parsedUser.name && typeof parsedUser.name === 'string' && parsedUser.name.trim() !== '') {
+            userName = parsedUser.name.trim();
+          }
+        } catch (e) {
+          console.error("خطأ في تحليل بيانات المستخدم:", e);
+        }
+      }
+      
+      // 2. من localStorage مباشرة
+      if (!userName) {
+        const localName = localStorage.getItem("userName") || localStorage.getItem("username");
+        if (localName && typeof localName === 'string' && localName.trim() !== '') {
+          userName = localName.trim();
+        }
+      }
+      
+      // 3. من sessionStorage
+      if (!userName) {
+        const sessionName = sessionStorage.getItem("userName") || sessionStorage.getItem("username");
+        if (sessionName && typeof sessionName === 'string' && sessionName.trim() !== '') {
+          userName = sessionName.trim();
+        }
+      }
+      
+      // إذا وجدنا اسم المستخدم، نستخدمه في رسالة الترحيب
+      if (userName) {
+        return [{
+          id: "system-welcome",
+          role: "assistant" as const,
+          content: `يا هلا ومرحبا بك يا ${userName}! أنا أبو محمد، خبيرك العقاري السعودي. أقدر أساعدك بأي استفسار عن العقار والاستثمار العقاري أو صيانة المنزل. يلا عاد، وش تبي تعرف اليوم؟`,
+          timestamp: new Date(),
+        }];
+      } else {
+        // رسالة ترحيب افتراضية إذا لم نجد اسم المستخدم
+        return [{
+          id: "system-welcome",
+          role: "assistant" as const,
+          content: `يا هلا ومرحبا بك! أنا أبو محمد، خبيرك العقاري السعودي. أقدر أساعدك بأي استفسار عن العقار والاستثمار العقاري أو صيانة المنزل. يلا عاد، وش تبي تعرف اليوم؟`,
+          timestamp: new Date(),
+        }];
+      }
+    } catch (error) {
+      console.error("حدث خطأ أثناء إنشاء رسالة الترحيب:", error);
+      // رسالة ترحيب بديلة في حالة حدوث خطأ
+      return [{
+        id: "system-welcome",
+        role: "assistant" as const,
+        content: `يا هلا ومرحبا بك! أنا أبو محمد، خبيرك العقاري السعودي. أقدر أساعدك بأي استفسار عن العقار والاستثمار العقاري أو صيانة المنزل. يلا عاد، وش تبي تعرف اليوم؟`,
+        timestamp: new Date(),
+      }];
+    }
   });
   const [isLoading, setIsLoading] = useState(false);
   const [activeModel, setActiveModel] = useState<string | null>(null);
@@ -193,15 +252,28 @@ export function SaudiRealEstateExpert() {
 
     const finalMockFallback = async (query: string): Promise<string> => {
       await new Promise(resolve => setTimeout(resolve, 500));
-      return `عذراً، نواجه حالياً صعوبة في الاتصال بنماذج الذكاء الاصطناعي. الرجاء المحاولة مرة أخرى لاحقاً. سؤالك كان عن: ${query}`;
+      return `عذراً يا طيب، أواجه حالياً صعوبة في الاتصال. ممكن تعيد سؤالك بعد شوي؟ سؤالك كان عن: ${query}`;
     };
 
     try {
-      // Prepare conversation history (simple format, assuming services adapt)
-      const conversationHistory = messages.map((msg) => ({ 
-        role: msg.role, 
-        content: msg.content 
-      }));
+      // تعديل المحادثة لتشمل تعليمات للذكاء الاصطناعي بالرد بلهجة سعودية
+      const systemPrompt = {
+        id: "system-prompt-" + Date.now().toString(),
+        role: "system" as const,
+        content: `أنت أبو محمد، خبير عقاري سعودي متخصص جداً في مجال العقار والاستثمار العقاري وصيانة المنزل في المملكة العربية السعودية. 
+        - تجيب دائماً باللهجة السعودية الواضحة والمفهومة (مثل: وش رايك، يبيلك، عشان، إلخ)
+        - خبرتك محصورة في مجال العقار والاستثمار العقاري وصيانة المنزل في السعودية
+        - إذا سُئلت عن أي موضوع خارج نطاق خبرتك، اعتذر بأدب وبلهجة سعودية
+        - أجوبتك دقيقة ومختصرة وعملية
+        - تتحدث بصيغة المتكلم المفرد (أنا، أقدر، عندي)`,
+        timestamp: new Date()
+      };
+      
+      // استخدام messages مباشرة مع إضافة systemPrompt
+      const conversationHistory = [
+        systemPrompt,
+        ...messages
+      ];
 
       // --- Attempt 1: Gemini --- 
       try {
@@ -441,24 +513,10 @@ export function SaudiRealEstateExpert() {
                         <div className="mb-4 p-3 bg-primary/10 rounded-full">
                           <Bot className="h-6 w-6 text-primary" />
                         </div>
-                        <h3 className="text-lg font-medium mb-2">أهلاً بك في أبو محمد مستشارك العقاري الذكي</h3>
+                        <h3 className="text-lg font-medium mb-2">يا هلا ومرحبا بك في أبو محمد مستشارك العقاري الذكي</h3>
                         <p className="text-sm text-muted-foreground max-w-md mb-6">
-                          اطرح أي سؤال حول الأمور العقارية وسأقدم لك المعلومات المتوفرة
+                          أقدر أساعدك بأي استفسار عن العقار والاستثمار العقاري أو صيانة المنزل. يلا عاد، وش تبي تعرف اليوم؟
                         </p>
-                        <div className="grid grid-cols-2 gap-2 w-full max-w-md">
-                          {sampleQuestions.slice(0, 2).map((question, index) => (
-                            <Button
-                              key={index}
-                              variant="outline"
-                              size="sm"
-                              className="text-sm justify-start text-right truncate"
-                              onClick={() => handleSampleQuestion(question.text)}
-                            >
-                              <span className="mr-1.5">{question.emoji}</span>
-                              <span className="truncate">{question.text}</span>
-                            </Button>
-                          ))}
-                        </div>
                       </div>
                     </FadeIn>
                   )}

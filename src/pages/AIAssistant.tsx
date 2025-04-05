@@ -16,7 +16,63 @@ type Message = {
 
 export default function AIAssistant() {
   const { toast } = useToast();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    // إضافة رسالة ترحيب افتراضية بلهجة سعودية
+    try {
+      // محاولة الحصول على اسم المستخدم من جميع المصادر المحتملة
+      let userName = null;
+      
+      // 1. من كائن المستخدم المخزن
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        try {
+          const parsedUser = JSON.parse(storedUser);
+          if (parsedUser && parsedUser.name && typeof parsedUser.name === 'string' && parsedUser.name.trim() !== '') {
+            userName = parsedUser.name.trim();
+          }
+        } catch (e) {
+          console.error("خطأ في تحليل بيانات المستخدم:", e);
+        }
+      }
+      
+      // 2. من localStorage مباشرة
+      if (!userName) {
+        const localName = localStorage.getItem("userName") || localStorage.getItem("username");
+        if (localName && typeof localName === 'string' && localName.trim() !== '') {
+          userName = localName.trim();
+        }
+      }
+      
+      // 3. من sessionStorage
+      if (!userName) {
+        const sessionName = sessionStorage.getItem("userName") || sessionStorage.getItem("username");
+        if (sessionName && typeof sessionName === 'string' && sessionName.trim() !== '') {
+          userName = sessionName.trim();
+        }
+      }
+      
+      // إذا وجدنا اسم المستخدم، نستخدمه في رسالة الترحيب
+      if (userName) {
+        return [{
+          id: "assistant-welcome",
+          role: "assistant" as const,
+          content: `يا هلا ومرحبا بك يا ${userName}! أنا أبو محمد، خبيرك العقاري السعودي. أقدر أساعدك بأي استفسار عن العقار والاستثمار العقاري أو صيانة المنزل. يلا عاد، وش تبي تعرف اليوم؟`,
+          timestamp: new Date(),
+        }];
+      }
+      
+      // رسالة ترحيب افتراضية إذا لم نجد اسم المستخدم
+      return [{
+        id: "assistant-welcome",
+        role: "assistant" as const,
+        content: `يا هلا ومرحبا بك! أنا أبو محمد، خبيرك العقاري السعودي. أقدر أساعدك بأي استفسار عن العقار والاستثمار العقاري أو صيانة المنزل. يلا عاد، وش تبي تعرف اليوم؟`,
+        timestamp: new Date(),
+      }];
+    } catch (error) {
+      console.error("خطأ أثناء إنشاء رسالة الترحيب:", error);
+      return [];
+    }
+  });
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -125,7 +181,18 @@ export default function AIAssistant() {
 
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
-      const responseText = `هل لديك سؤال محدد حول العقارات؟`;
+      
+      // إنشاء برومبت النظام ليستجيب بلهجة سعودية
+      const systemPrompt = `أنت أبو محمد، خبير عقاري سعودي متخصص جداً في مجال العقار والاستثمار العقاري وصيانة المنزل في المملكة العربية السعودية. 
+      - تجيب دائماً باللهجة السعودية الواضحة والمفهومة (مثل: وش رايك، يبيلك، عشان، إلخ)
+      - خبرتك محصورة في مجال العقار والاستثمار العقاري وصيانة المنزل في السعودية
+      - إذا سُئلت عن أي موضوع خارج نطاق خبرتك، اعتذر بأدب وبلهجة سعودية
+      - أجوبتك دقيقة ومختصرة وعملية
+      - تتحدث بصيغة المتكلم المفرد (أنا، أقدر، عندي)`;
+      
+      // الرد بلهجة سعودية
+      const responseText = `يمديني أساعدك في استفسارك عن العقار، وش اللي تبي تعرفه بالضبط؟`;
+      
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
@@ -137,7 +204,7 @@ export default function AIAssistant() {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: "عذراً، حدث خطأ أثناء المعالجة.",
+        content: "عذراً يا طيب، صارت مشكلة عندي. ممكن تعيد سؤالك بعد شوي؟",
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -179,9 +246,9 @@ export default function AIAssistant() {
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
                 <Bot className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-medium">أهلاً بك في المستشار العقاري</h3>
+              <h3 className="text-xl font-medium">يا هلا ومرحبا بك في المستشار العقاري</h3>
               <p className="text-muted-foreground max-w-md">
-                أنا هنا لمساعدتك في كل ما يتعلق بالعقارات، التمويل، والاستثمار العقاري.
+                أنا أبو محمد، أقدر أساعدك بأي استفسار عن العقار والاستثمار العقاري أو صيانة المنزل. يلا عاد، وش تبي تعرف اليوم؟
               </p>
             </div>
           )}
