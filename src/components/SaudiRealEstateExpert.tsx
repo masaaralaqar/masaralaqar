@@ -506,7 +506,7 @@ export function SaudiRealEstateExpert() {
                 <div 
                   ref={chatContainerRef}
                   className="flex-1 overflow-y-auto py-3 sm:py-4 px-3 sm:px-4 space-y-3 sm:space-y-4 scrollbar-thin scrollbar-thumb-border hover:scrollbar-thumb-primary/50 scrollbar-track-transparent"
-                  style={{ overscrollBehavior: 'contain' }}
+                  style={{ overscrollBehavior: 'contain', direction: 'rtl' }}
                 >
                   {messages.length === 0 && !isLoading && (
                     <FadeIn delay={300}>
@@ -535,8 +535,9 @@ export function SaudiRealEstateExpert() {
                         <FadeIn key={message.id} duration={300}>
                           <div
                             className={`flex items-end gap-1.5 ${
-                              isUser ? "justify-end" : "justify-start"
+                              isUser ? "justify-start" : "justify-end"
                             } ${index > 0 && messages[index - 1].role === message.role ? "mt-1" : "mt-3"}`}
+                            dir="rtl"
                           >
                             {!isUser && (index === 0 || messages[index - 1].role !== message.role) && (
                               <div className="shrink-0 w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-gradient-to-tr from-primary to-secondary text-primary-foreground shadow-sm self-end mb-1">
@@ -544,11 +545,10 @@ export function SaudiRealEstateExpert() {
                               </div>
                             )}
                             <div
-                              dir="rtl"
-                              className={`relative max-w-[95%] sm:max-w-[90%] md:max-w-[85%] rounded-2xl px-3 py-2.5 sm:px-4 sm:py-3 md:px-5 md:py-4 shadow-sm transition-all duration-300 ease-out text-sm md:text-base leading-relaxed break-words whitespace-pre-wrap ${
+                              className={`relative max-w-[95%] sm:max-w-[90%] md:max-w-[85%] rounded-2xl px-3 py-2.5 sm:px-4 sm:py-3 md:px-5 md:py-4 shadow-sm transition-all duration-300 ease-out text-sm md:text-base leading-relaxed break-words whitespace-pre-wrap text-right ${
                                 isUser 
-                                  ? "bg-primary text-primary-foreground rounded-br-sm ml-8 sm:ml-12" 
-                                  : "bg-card border border-border rounded-bl-sm mr-8 sm:mr-12"
+                                  ? "bg-primary text-primary-foreground rounded-br-sm mr-8 sm:mr-12" 
+                                  : "bg-card border border-border rounded-bl-sm ml-8 sm:ml-12"
                               } ${index > 0 && messages[index - 1].role === message.role 
                                 ? isUser ? "rounded-tr-md" : "rounded-tl-md" 
                                 : ""}`}
@@ -556,7 +556,7 @@ export function SaudiRealEstateExpert() {
                               {message.content}
                               
                               {showTimestamp && (
-                                <div className={`absolute ${isUser ? "-left-6 text-left" : "-right-6 text-right"} -bottom-5 text-[10px] text-muted-foreground opacity-70`}>
+                                <div className={`absolute ${isUser ? "-right-6 text-right" : "-left-6 text-left"} -bottom-5 text-[10px] text-muted-foreground opacity-70`}>
                                   {new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                                 </div>
                               )}
@@ -611,9 +611,9 @@ export function SaudiRealEstateExpert() {
                       placeholder="اكتب سؤالك هنا..."
                       value={input}
                       onChange={handleInputChange}
-                      className="w-full pr-10 sm:pr-12 pl-2 sm:pl-4 py-2 sm:py-3 text-sm rounded-xl border-2 border-border focus-visible:border-primary transition-colors duration-200 bg-background shadow-sm resize-none overflow-hidden min-h-[42px] whitespace-pre-wrap leading-relaxed"
+                      className="w-full pr-10 sm:pr-12 pl-2 sm:pl-4 py-2 sm:py-3 text-sm rounded-xl border-2 border-border focus-visible:border-primary transition-colors duration-200 bg-background shadow-sm resize-none overflow-hidden min-h-[42px] whitespace-pre-wrap leading-relaxed text-right"
                       disabled={isLoading}
-                      style={{ height: '42px', maxHeight: '150px' }}
+                      style={{ height: '42px', maxHeight: '150px', direction: 'rtl' }}
                       onInput={(e) => {
                         e.currentTarget.style.height = "auto";
                         const newHeight = Math.min(Math.max(e.currentTarget.scrollHeight, 42), 150);

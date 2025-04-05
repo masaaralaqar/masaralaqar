@@ -258,7 +258,7 @@ export default function AIAssistant() {
               key={message.id}
               className={cn(
                 "flex w-full items-end gap-2 md:gap-3",
-                message.role === "assistant" ? "justify-start" : "justify-end"
+                message.role === "assistant" ? "justify-end" : "justify-start"
               )}
             >
               {message.role === "assistant" && (
@@ -268,7 +268,7 @@ export default function AIAssistant() {
               )}
               <div
                 className={cn(
-                  "rounded-2xl px-3 py-2.5 sm:px-4 sm:py-3 md:px-5 md:py-4 w-full max-w-[95%] sm:max-w-[90%] md:max-w-[85%] break-words shadow-md whitespace-pre-wrap text-sm md:text-base leading-relaxed",
+                  "rounded-2xl px-3 py-2.5 sm:px-4 sm:py-3 md:px-5 md:py-4 w-full max-w-[95%] sm:max-w-[90%] md:max-w-[85%] break-words shadow-md whitespace-pre-wrap text-sm md:text-base leading-relaxed text-right",
                   message.role === "assistant"
                     ? "bg-card border border-border text-card-foreground"
                     : "bg-primary text-primary-foreground",
@@ -293,12 +293,12 @@ export default function AIAssistant() {
             </div>
           ))}
           {isLoading && (
-            <div className="flex items-start gap-2 md:gap-3">
+            <div className="flex items-start gap-2 md:gap-3 justify-end">
               <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center">
                 <Bot className="h-4 w-4 md:h-5 md:w-5 text-primary" />
               </div>
               <div className="bg-card border border-border rounded-2xl rounded-bl-sm px-4 py-3 md:px-5 md:py-4 w-full max-w-[90%] sm:max-w-[85%] md:max-w-[75%] shadow-md">
-                <div className="flex gap-2">
+                <div className="flex gap-2 justify-end">
                   <div className="w-2 h-2 rounded-full bg-primary/60 animate-pulse"></div>
                   <div className="w-2 h-2 rounded-full bg-primary/60 animate-pulse [animation-delay:0.2s]"></div>
                   <div className="w-2 h-2 rounded-full bg-primary/60 animate-pulse [animation-delay:0.4s]"></div>
@@ -321,6 +321,7 @@ export default function AIAssistant() {
                 e.currentTarget.style.height = `${newHeight}px`;
               }}
               disabled={isOverallLoading}
+              style={{ direction: 'rtl' }}
             />
             <Button 
               type="submit" 
