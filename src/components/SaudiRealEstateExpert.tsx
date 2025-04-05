@@ -46,18 +46,8 @@ export function SaudiRealEstateExpert() {
   const { toast } = useToast();
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>(() => {
-    // Add initial system message but don't display it
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    const initialMessages: Message[] = [
-      {
-        id: "assistant-1",
-        role: "assistant" as const,
-        content: `مرحباً ${user.name}، أنا أبو محمد مستشارك في مجال العقار. يمكنني مساعدتك بالمعلومات المتوفرة حول:\n\n- التمويل العقاري\n- خطوات شراء العقار\n- الإجراءات القانونية\n- المصطلحات العقارية\n\nهذه المنصة تقدم معلومات عامة فقط وليست بديلاً عن الاستشارات المهنية المتخصصة.`,
-        timestamp: new Date(),
-      }
-    ];
-    
-    return initialMessages;
+    // سنقوم بإزالة رسالة الترحيب تماماً وعدم إنشاء أي رسائل افتراضية
+    return [];
   });
   const [isLoading, setIsLoading] = useState(false);
   const [activeModel, setActiveModel] = useState<string | null>(null);
@@ -451,7 +441,7 @@ export function SaudiRealEstateExpert() {
                         <div className="mb-4 p-3 bg-primary/10 rounded-full">
                           <Bot className="h-6 w-6 text-primary" />
                         </div>
-                        <h3 className="text-lg font-medium mb-2">مرحباً بك في أبو محمد مستشارك العقاري الذكي</h3>
+                        <h3 className="text-lg font-medium mb-2">أهلاً بك في أبو محمد مستشارك العقاري الذكي</h3>
                         <p className="text-sm text-muted-foreground max-w-md mb-6">
                           اطرح أي سؤال حول الأمور العقارية وسأقدم لك المعلومات المتوفرة
                         </p>

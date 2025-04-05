@@ -91,7 +91,7 @@ export default function AIAssistant() {
 
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
-      const responseText = `شكراً لتواصلك معنا ${displayName}!\n\nهل لديك سؤال محدد؟`;
+      const responseText = `هل لديك سؤال محدد حول العقارات؟`;
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
@@ -145,7 +145,7 @@ export default function AIAssistant() {
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
                 <Bot className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-medium">مرحباً بك في المستشار العقاري</h3>
+              <h3 className="text-xl font-medium">أهلاً بك في المستشار العقاري</h3>
               <p className="text-muted-foreground max-w-md">
                 أنا هنا لمساعدتك في كل ما يتعلق بالعقارات، التمويل، والاستثمار العقاري.
               </p>
