@@ -34,6 +34,7 @@ import {
   ComposedChart,
   Scatter,
 } from 'recharts';
+import { Info, ArrowLeft } from "lucide-react";
 
 // ألوان مخصصة للبنوك مع تدرجات
 const BANK_COLORS = [
@@ -202,7 +203,12 @@ export function BankComparisonPage() {
             <CardDescription>مقارنة شاملة لأسعار التمويل والعروض</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="rounded-md border">
+            <div className="md:hidden flex items-center gap-2 mb-3 text-sm text-muted-foreground">
+              <Info size={14} className="shrink-0" />
+              <span>مرر للجانب للاطلاع على كامل الجدول</span>
+              <ArrowLeft size={14} className="animate-pulse text-primary shrink-0" />
+            </div>
+            <div className="rounded-md border overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>

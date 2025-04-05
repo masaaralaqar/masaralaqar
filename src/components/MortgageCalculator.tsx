@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { GlassCard, GlassCardContent, GlassCardHeader, GlassCardTitle } from "./ui/glass-card";
 import { Button } from "@/components/ui/button";
-import { Calculator, AlertTriangle, ArrowRight, Check, ArrowLeft, Info } from "lucide-react";
+import { Calculator, AlertTriangle, ArrowRight, Check, ArrowLeft, Info, Landmark } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { PersonalInfoTab } from "./mortgage/PersonalInfoTab";
 import { PropertyInfoTab } from "./mortgage/PropertyInfoTab";
@@ -34,6 +34,8 @@ export function MortgageCalculator() {
   const [propertyValue, setPropertyValue] = useState<number>(500000);
   const [downPayment, setDownPayment] = useState<number>(50000);
   const [eligibilityError, setEligibilityError] = useState<string | null>(null);
+  // مرجع للنتائج لاستخدامه في التمرير التلقائي
+  const resultsRef = useRef<HTMLDivElement>(null);
   
   // Step navigation state
   const [currentStep, setCurrentStep] = useState<StepId>('personal');
@@ -248,6 +250,13 @@ export function MortgageCalculator() {
       bankComparison: bankComparisonData
     });
     
+    // التمرير إلى النتائج بعد الانتهاء من الحساب
+    setTimeout(() => {
+      if (resultsRef.current) {
+        resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+    
     toast({
       title: "تم احتساب التمويل",
       description: "تم إجراء الحسابات بناءً على البيانات المدخلة",
@@ -339,113 +348,93 @@ export function MortgageCalculator() {
   };
 
   return (
-    <section id="calculator" className="relative">
-      <div className="max-w-6xl mx-auto">
-        {/* Calculator Form */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-8">
-          <div className="lg:col-span-3">
-            <GlassCard>
-              <GlassCardHeader>
-                <GlassCardTitle className="flex items-center gap-2">
-                  <Calculator size={20} />
-                  <span>بيانات التمويل</span>
-                </GlassCardTitle>
-              </GlassCardHeader>
-              <GlassCardContent>
-                {eligibilityError && (
-                  <Alert variant="destructive" className="mb-6">
-                    <AlertTriangle className="h-4 w-4 ml-2" />
-                    <AlertDescription>
-                      {eligibilityError}
-                    </AlertDescription>
-                  </Alert>
-                )}
-
-                {/* Platform description */}
-                <div className="mb-6 p-4 rounded-md bg-secondary/20">
-                  <div className="flex gap-3">
-                    <Info className="h-5 w-5 shrink-0 mt-0.5 text-primary" />
-                    <p className="text-sm">
-                      {PLATFORM_DESCRIPTION.long}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Step Navigation */}
-                <StepNavigation 
-                  steps={steps}
-                  currentStep={currentStep}
-                  completedSteps={completedSteps}
-                  goToStep={goToStep}
-                />
-                
-                {/* Step Content */}
-                <div className="mt-6 mb-6">
-                  {renderStepContent()}
-                </div>
-
-                {/* Navigation buttons */}
-                <div className="mt-8 flex justify-between">
-                  {currentStep !== 'personal' ? (
-                    <Button 
-                      variant="outline" 
-                      onClick={handlePreviousStep}
-                      className="flex gap-2 items-center"
-                    >
-                      <ArrowLeft className="w-5 h-5 ml-1" />
-                      السابق
-                    </Button>
-                  ) : <div></div>}
-                  
+    <div className="flex flex-col gap-6 mb-10">
+      {/* الخطوات والمدخلات */}
+      <div className="flex items-center justify-center w-full mb-2">
+        <div className="w-full max-w-2xl">
+          <StepNavigation 
+            steps={steps} 
+            currentStep={currentStep}
+            completedSteps={completedSteps}
+            onStepClick={goToStep}
+          />
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div className="xl:col-span-2">
+          <GlassCard className="h-full">
+            <GlassCardHeader>
+              <GlassCardTitle className="flex items-center gap-2">
+                <Calculator size={20} />
+                <span>حاسبة التمويل العقاري</span>
+              </GlassCardTitle>
+            </GlassCardHeader>
+            <GlassCardContent className="pb-8">
+              {eligibilityError && (
+                <Alert variant="destructive" className="mb-6">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription>{eligibilityError}</AlertDescription>
+                </Alert>
+              )}
+              
+              {renderStepContent()}
+              
+              <div className="flex items-center justify-between mt-8">
+                {currentStep !== steps[0].id && (
                   <Button 
-                    size="lg" 
-                    className="flex gap-2 items-center"
-                    onClick={handleNextStep}
-                    disabled={!isCurrentStepValid()}
+                    className="flex items-center gap-2"
+                    onClick={handlePreviousStep}
                   >
-                    {currentStep === 'loan' ? (
-                      <>
-                        احسب التمويل المتاح
-                        <Check className="w-5 h-5 mr-1" />
-                      </>
+                    <ArrowRight size={16} />
+                    <span>السابق</span>
+                  </Button>
+                )}
+                
+                <div className="ml-auto">
+                  <Button 
+                    className="flex items-center gap-2" 
+                    disabled={!isCurrentStepValid()}
+                    onClick={handleNextStep}
+                  >
+                    <span>{currentStep === steps[steps.length - 1].id ? 'حساب التمويل' : 'التالي'}</span>
+                    {currentStep === steps[steps.length - 1].id ? (
+                      <Calculator size={16} />
                     ) : (
-                      <>
-                        التالي
-                        <ArrowRight className="w-5 h-5 mr-1" />
-                      </>
+                      <ArrowLeft size={16} />
                     )}
                   </Button>
                 </div>
-              </GlassCardContent>
-            </GlassCard>
-          </div>
-
-          <div className="lg:col-span-2">
-            <ResultsDisplay 
-              results={results} 
+              </div>
+            </GlassCardContent>
+          </GlassCard>
+        </div>
+        
+        <div className="xl:col-span-1" ref={resultsRef}>
+          <ResultsDisplay results={results} formatCurrency={formatCurrency} />
+        </div>
+      </div>
+      
+      {/* جدول مقارنة العروض المصرفية */}
+      {results && (
+        <div className="my-8">
+          <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+            <Landmark size={24} />
+            <span>مقارنة عروض البنوك</span>
+          </h2>
+          <div className="bg-card rounded-xl border shadow-sm p-4 overflow-x-auto">
+            <div className="flex items-center gap-2 mb-4 text-sm text-muted-foreground">
+              <Info size={16} className="shrink-0" />
+              <span>مرر للجانب للاطلاع على كافة العروض المتاحة</span>
+              <ArrowLeft size={16} className="animate-pulse text-primary shrink-0" />
+            </div>
+            <BankComparisonTable 
+              comparisonData={results.bankComparison} 
               formatCurrency={formatCurrency} 
             />
           </div>
         </div>
-
-        {/* Bank Comparison Table - Full Width */}
-        {results && results.bankComparison && results.bankComparison.length > 0 && (
-          <div className="mt-12 bg-card rounded-lg border shadow-sm p-6">
-            <div className="max-w-4xl mx-auto">
-              <h3 className="text-2xl font-semibold mb-4 text-center">مقارنة تقديرية بين البنوك</h3>
-              <p className="text-sm text-muted-foreground text-center mb-6">
-                ملاحظة: هذه الأرقام تقديرية وقد تختلف. يرجى التحقق مباشرة مع البنوك.
-              </p>
-              <div className="w-full">
-                <BankComparisonTable 
-                  comparisonData={results.bankComparison} 
-                  formatCurrency={formatCurrency} 
-                />
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </section>
+      )}
+    </div>
   );
 }
