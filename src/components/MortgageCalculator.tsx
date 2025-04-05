@@ -423,11 +423,6 @@ export function MortgageCalculator() {
             <span>مقارنة عروض البنوك</span>
           </h2>
           <div className="bg-card rounded-xl border shadow-sm p-4 overflow-x-auto">
-            <div className="md:hidden flex items-center gap-2 mb-4 text-sm text-muted-foreground">
-              <Info size={16} className="shrink-0" />
-              <span>مرر لليسار لمشاهدة باقي الجدول</span>
-              <ArrowLeft size={16} className="animate-pulse text-primary shrink-0" />
-            </div>
             <BankComparisonTable 
               comparisonData={results.bankComparison} 
               formatCurrency={formatCurrency} 
