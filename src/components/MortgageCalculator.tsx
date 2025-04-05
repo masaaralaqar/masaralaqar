@@ -356,7 +356,7 @@ export function MortgageCalculator() {
             steps={steps} 
             currentStep={currentStep}
             completedSteps={completedSteps}
-            onStepClick={goToStep}
+            goToStep={goToStep}
           />
         </div>
       </div>
@@ -391,13 +391,13 @@ export function MortgageCalculator() {
                   </Button>
                 )}
                 
-                <div className="ml-auto">
+                <div className="mr-auto">
                   <Button 
                     className="flex items-center gap-2" 
                     disabled={!isCurrentStepValid()}
                     onClick={handleNextStep}
                   >
-                    <span>{currentStep === steps[steps.length - 1].id ? 'حساب التمويل' : 'التالي'}</span>
+                    <span>{currentStep === steps[steps.length - 1].id ? 'احسب التمويل' : 'التالي'}</span>
                     {currentStep === steps[steps.length - 1].id ? (
                       <Calculator size={16} />
                     ) : (
@@ -423,7 +423,7 @@ export function MortgageCalculator() {
             <span>مقارنة عروض البنوك</span>
           </h2>
           <div className="bg-card rounded-xl border shadow-sm p-4 overflow-x-auto">
-            <div className="flex items-center gap-2 mb-4 text-sm text-muted-foreground">
+            <div className="md:hidden flex items-center gap-2 mb-4 text-sm text-muted-foreground">
               <Info size={16} className="shrink-0" />
               <span>مرر للجانب للاطلاع على كافة العروض المتاحة</span>
               <ArrowLeft size={16} className="animate-pulse text-primary shrink-0" />

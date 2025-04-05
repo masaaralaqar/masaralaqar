@@ -251,8 +251,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         // إضافة تأخير صغير قبل التوجيه للتأكد من اكتمال تحديث الحالة
         setTimeout(() => {
-          // توجيه المستخدم مباشرة إلى الصفحة الرئيسية
-          navigate(import.meta.env.MODE === 'production' ? '/masaralaqar/' : '/');
+          // التحقق من وجود مسار محفوظ للتوجيه بعد تسجيل الدخول
+          const redirectPath = safeGetItem("redirectAfterLogin");
+          if (redirectPath) {
+            safeRemoveItem("redirectAfterLogin");
+            navigate(redirectPath);
+          } else {
+            // توجيه المستخدم إلى الصفحة الرئيسية إذا لم يكن هناك مسار محفوظ
+            navigate(import.meta.env.MODE === 'production' ? '/masaralaqar/' : '/');
+          }
         }, 300);
         
         return true;
