@@ -141,11 +141,16 @@ export default function Index() {
               <div className="md:w-1/3 flex justify-center">
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md rotate-3 transform hover:rotate-0 transition-all duration-300">
                   <img 
-                    src="/assets/guide-cover.svg" 
+                    src={import.meta.env.MODE === 'production' 
+                      ? 'https://masaaralaqar.github.io/masaralaqar/assets/guide-cover.svg' 
+                      : '/assets/guide-cover.svg'
+                    } 
                     alt="دليل مسار العقار" 
                     className="w-56 h-auto object-contain rounded-lg"
                     onError={(e) => {
+                      console.log('Error loading image, using fallback');
                       const target = e.target as HTMLImageElement;
+                      target.onerror = null; // منع التكرار اللانهائي
                       target.src = "https://placehold.co/400x500/5f9fca/ffffff?text=دليل+مسار+العقار";
                     }}
                   />

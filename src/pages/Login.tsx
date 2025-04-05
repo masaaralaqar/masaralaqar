@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/auth-context";
 import { Input } from "@/components/ui/input";
@@ -16,9 +16,18 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [attempts, setAttempts] = useState(0);
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // التحقق من حالة تسجيل الدخول عند تحميل الصفحة
+  useEffect(() => {
+    // إذا كان المستخدم مسجل الدخول بالفعل، وجهه إلى الصفحة الرئيسية
+    if (isAuthenticated) {
+      // استخدام المسار المناسب اعتماداً على بيئة العمل
+      navigate(import.meta.env.MODE === 'production' ? '/masaralaqar/' : '/');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,13 +56,9 @@ export default function Login() {
       setLoading(true);
       const success = await login(name, password);
       if (success) {
-        // Limpiar intentos fallidos
+        localStorage.setItem("username", name); // ✅ حفظ الاسم بعد الدخول
         setAttempts(0);
-        
-        // Redirección a la página guardada o a la página principal
-        const redirectPath = localStorage.getItem("redirectAfterLogin") || "/";
-        navigate(redirectPath);
-        localStorage.removeItem("redirectAfterLogin");
+        // تم التوجيه في وظيفة تسجيل الدخول
       } else {
         setAttempts(attempts + 1);
         setError("كلمة المرور غير صحيحة");
@@ -98,7 +103,7 @@ export default function Login() {
           <CardHeader className="text-center space-y-8">
             <div className="flex justify-center">
               <img 
-                src="/assets/new-logo.svg" 
+                src={import.meta.env.MODE === 'production' ? '/masaralaqar/assets/new-logo.svg' : '/assets/new-logo.svg'} 
                 alt="مسار العقار" 
                 className="h-40 w-auto"
               />
@@ -140,7 +145,7 @@ export default function Login() {
                   className="text-right"
                   required
                   autoComplete="current-password"
-                  minLength={8}
+                  minLength={6}
                   maxLength={128}
                   disabled={loading}
                 />

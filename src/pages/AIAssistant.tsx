@@ -1,12 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bot, Send, User } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Bot, Send, User, Info, RefreshCw, Loader2 } from "lucide-react";
 import { preventAutoScroll } from "@/lib/utils";
-import { FadeIn } from "@/components/ui/transitions";
+import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 
 type Message = {
   id: string;
@@ -16,312 +15,236 @@ type Message = {
 };
 
 export default function AIAssistant() {
+  const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
-  const { user } = useAuth();
+  const { user, isLoading: isAuthLoading, isUserLoading } = useAuth();
+  const isOverallLoading = isAuthLoading || isUserLoading;
+  
+  const [displayName, setDisplayName] = useState<string | null>(null);
 
-  // تحديد ما إذا كان المستخدم في نهاية المحادثة
+  useEffect(() => {
+    if (!isOverallLoading) {
+      let foundName = null;
+      
+      if (user && user.name) {
+        foundName = user.name;
+      } 
+      else if (localStorage.getItem("userName")) {
+        foundName = localStorage.getItem("userName");
+      } 
+      else if (sessionStorage.getItem("userName")) {
+        foundName = sessionStorage.getItem("userName");
+      }
+      
+      if (foundName && typeof foundName === 'string' && foundName.trim() !== '') {
+        setDisplayName(foundName);
+      } else {
+        setDisplayName("الزائر العزيز");
+      }
+    }
+  }, [isAuthLoading, isUserLoading, isOverallLoading, user]);
+
   const isAtBottom = () => {
-    if (!scrollAreaRef.current) return true;
-    
-    const container = scrollAreaRef.current;
-    const threshold = 100; // بكسل
+    if (!chatContainerRef.current) return true;
+    const container = chatContainerRef.current;
+    const threshold = 100;
     const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
-    
     return distanceFromBottom <= threshold;
   };
 
-  // منع التمرير التلقائي عند تحميل الصفحة
   useEffect(() => {
     const cleanup = preventAutoScroll();
-    
-    // تعطيل دالة scrollIntoView
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView = function() {
-        // لا تفعل شيئًا
-        return;
-      };
-    }
-    
-    // تطبيق متكرر لمنع التمرير للأسفل
-    const additionalPrevention = setInterval(() => {
-      window.scrollTo(0, 0);
-    }, 100);
-    
-    // إيقاف التطبيق المتكرر بعد ثانية
-    const stopPrevention = setTimeout(() => {
-      clearInterval(additionalPrevention);
-    }, 1000);
-    
-    return () => {
-      if (cleanup) cleanup();
-      clearInterval(additionalPrevention);
-      clearTimeout(stopPrevention);
-    };
+    return () => { if (cleanup) cleanup(); };
   }, []);
 
   useEffect(() => {
-    // إضافة رسالة ترحيب عند تحميل الصفحة
-    if (user?.name) {
-      const welcomeMessage: Message = {
-        id: Date.now().toString(),
-        role: "assistant",
-        content: `مرحباً ${user.name}، أنا مستشارك العقاري الذكي. كيف يمكنني مساعدتك اليوم؟ يمكنني تقديم المشورة حول:\n\n- التمويل العقاري\n- اختيار العقار المناسب\n- تحليل الأسعار\n- نصائح الاستثمار العقاري\n- وغيرها من المواضيع المتعلقة بالعقارات`,
-        timestamp: new Date()
-      };
-      setMessages([welcomeMessage]);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    // التمرير فقط إذا كان المستخدم في نهاية المحادثة
-    if (scrollAreaRef.current && isAtBottom() && autoScroll) {
-      // استخدام تأخير صغير للسماح بتحديث واجهة المستخدم أولاً
+    if (chatContainerRef.current && autoScroll) {
       const timer = setTimeout(() => {
-        if (scrollAreaRef.current) {
-          scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+        if (chatContainerRef.current && isAtBottom()) {
+          chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
         }
-      }, 200);
+      }, 150);
       return () => clearTimeout(timer);
     }
   }, [messages, autoScroll]);
 
-  // مراقبة التمرير لتحديد ما إذا كان المستخدم في أسفل المحادثة
   const handleScroll = () => {
-    if (scrollAreaRef.current) {
-      setAutoScroll(isAtBottom());
-    }
+    if (chatContainerRef.current) setAutoScroll(isAtBottom());
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
-
-    // حفظ موضع التمرير الحالي
-    const currentScrollPosition = scrollAreaRef.current?.scrollTop || 0;
-
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
       content: input.trim(),
-      timestamp: new Date()
+      timestamp: new Date(),
     };
     setInput("");
-    
-    // تحديث الرسائل مع الحفاظ على موضع التمرير
-    setMessages((prev) => {
-      const updatedMessages = [...prev, userMessage];
-      
-      // استخدام setTimeout للتأكد من تنفيذ هذا الكود بعد تحديث واجهة المستخدم
-      setTimeout(() => {
-        if (scrollAreaRef.current && !autoScroll) {
-          // إعادة ضبط موضع التمرير إلى ما كان عليه
-          scrollAreaRef.current.scrollTop = currentScrollPosition;
-        }
-      }, 0);
-      
-      return updatedMessages;
-    });
-    
+    setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // Generate response based on user input
-      let responseText = "";
-      if (input.toLowerCase().includes("مرحبا") || input.toLowerCase().includes("اهلا")) {
-        responseText = `مرحباً ${user?.name}، كيف يمكنني مساعدتك اليوم؟`;
-      } else if (input.toLowerCase().includes("شكرا")) {
-        responseText = `على الرحب والسعة ${user?.name}، هل هناك أي شيء آخر يمكنني مساعدتك به؟`;
-      } else {
-        responseText = "أنا مستشارك العقاري الذكي. يمكنني مساعدتك في:\n\n- تقديم نصائح حول التمويل العقاري\n- تحليل الأسعار في مناطق مختلفة\n- تقديم إرشادات حول اختيار العقار المناسب\n- تقديم نصائح للاستثمار العقاري\n\nما هو سؤالك بالتحديد؟";
-      }
-
+      await new Promise(resolve => setTimeout(resolve, 500));
+      const responseText = `شكراً لتواصلك معنا ${displayName}!\n\nهل لديك سؤال محدد؟`;
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content: responseText,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-
-      // تحديث الرسائل مع الحفاظ على موضع التمرير
-      setMessages((prev) => {
-        const updatedMessages = [...prev, botResponse];
-        
-        // استخدام setTimeout للتأكد من تنفيذ هذا الكود بعد تحديث واجهة المستخدم
-        setTimeout(() => {
-          if (scrollAreaRef.current && !autoScroll) {
-            // إعادة ضبط موضع التمرير إلى ما كان عليه
-            scrollAreaRef.current.scrollTop = currentScrollPosition;
-          }
-        }, 0);
-        
-        return updatedMessages;
-      });
+      setMessages(prev => [...prev, botResponse]);
     } catch (error) {
-      console.error("Error:", error);
-      
-      // تحديث الرسائل مع الحفاظ على موضع التمرير في حالة الخطأ
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: "عذراً، حدث خطأ أثناء معالجة طلبك. الرجاء المحاولة مرة أخرى.",
-        timestamp: new Date()
+        content: "عذراً، حدث خطأ أثناء المعالجة.",
+        timestamp: new Date(),
       };
-      
-      setMessages((prev) => {
-        const updatedMessages = [...prev, errorMessage];
-        
-        // استخدام setTimeout للتأكد من تنفيذ هذا الكود بعد تحديث واجهة المستخدم
-        setTimeout(() => {
-          if (scrollAreaRef.current && !autoScroll) {
-            // إعادة ضبط موضع التمرير إلى ما كان عليه
-            scrollAreaRef.current.scrollTop = currentScrollPosition;
-          }
-        }, 0);
-        
-        return updatedMessages;
-      });
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const resetChat = () => setMessages([]);
+
   return (
-    <div className="container mx-auto p-4 max-w-4xl">
-      <Card className="w-full rounded-xl shadow-lg border">
-        <CardHeader className="bg-card/80 backdrop-blur-sm border-b">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Bot className="h-6 w-6 text-primary" />
-            المستشار العقاري الذكي
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="flex flex-col h-[600px]">
-            <ScrollArea 
-              ref={scrollAreaRef} 
-              className="flex-1 rounded-md p-4"
-              onScroll={handleScroll}
-            >
-              <div className="space-y-4">
-                {messages.length === 0 ? (
-                  <div className="h-[500px] flex flex-col items-center justify-center text-center p-6">
-                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                      <Bot size={28} className="opacity-70" />
-                    </div>
-                    <h3 className="text-lg font-medium mb-2">مرحباً بك في المستشار العقاري الذكي</h3>
-                    <p className="text-sm text-muted-foreground max-w-md mb-6">
-                      اطرح أي سؤال حول العقارات أو التمويل العقاري وسأحاول مساعدتك
-                    </p>
-                  </div>
-                ) : (
-                  messages.map((message, index) => {
-                    const isUser = message.role === "user";
-                    const showTimestamp = index === messages.length - 1 || 
-                      messages[index + 1]?.role !== message.role;
-                    
-                    return (
-                      <FadeIn key={message.id}>
-                        <div
-                          className={`flex ${
-                            isUser ? "justify-end" : "justify-start"
-                          }`}
-                        >
-                          <div
-                            className={`max-w-[80%] rounded-lg p-3 ${
-                              isUser
-                                ? "bg-primary text-primary-foreground rounded-br-sm"
-                                : "bg-muted rounded-bl-sm"
-                            }`}
-                          >
-                            <div className="flex items-center gap-2 mb-1">
-                              {isUser ? (
-                                <User className="h-4 w-4" />
-                              ) : (
-                                <Bot className="h-4 w-4" />
-                              )}
-                              <span className="font-medium">
-                                {isUser ? "أنت" : "المستشار العقاري"}
-                              </span>
-                            </div>
-                            <p className="whitespace-pre-wrap text-sm">{message.content}</p>
-                            {showTimestamp && (
-                              <div className="text-right mt-1">
-                                <span className="text-[10px] text-muted-foreground opacity-70">
-                                  {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </FadeIn>
-                    );
-                  })
-                )}
-                {isLoading && (
-                  <FadeIn>
-                    <div className="flex justify-start">
-                      <div className="max-w-[80%] rounded-lg p-3 bg-muted rounded-bl-sm">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Bot className="h-4 w-4" />
-                          <span className="font-medium">المستشار العقاري</span>
-                        </div>
-                        <div className="flex space-x-2 rtl:space-x-reverse h-5 items-center">
-                          <div className="w-2 h-2 bg-primary/60 rounded-full animate-pulse"></div>
-                          <div className="w-2 h-2 bg-primary/60 rounded-full animate-pulse [animation-delay:0.2s]"></div>
-                          <div className="w-2 h-2 bg-primary/60 rounded-full animate-pulse [animation-delay:0.4s]"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </FadeIn>
-                )}
-                <div ref={messagesEndRef} />
+    <div className="flex flex-col h-[calc(100vh-4rem)] max-h-[calc(100vh-4rem)] bg-gradient-to-b from-background to-muted/30">
+      <Card className="h-full flex-1 flex flex-col mx-auto w-full max-w-3xl bg-card/80 backdrop-blur-sm shadow-lg rounded-none sm:rounded-xl sm:my-4 border-muted">
+        <CardHeader className="py-3 px-4 md:px-6 border-b bg-muted/30">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg md:text-xl font-bold flex items-center gap-2">
+              <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
+                <Bot className="h-5 w-5 text-primary" />
               </div>
-            </ScrollArea>
-            {!autoScroll && messages.length > 1 && (
-              <div className="absolute bottom-24 right-4 z-10">
-                <Button
-                  size="icon"
-                  className="rounded-full h-10 w-10 shadow-md bg-primary text-primary-foreground hover:bg-primary/90"
-                  onClick={() => {
-                    setAutoScroll(true);
-                    if (scrollAreaRef.current) {
-                      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
-                    }
-                  }}
-                >
-                  <span>↓</span>
-                </Button>
+              <div className="flex flex-col">
+                <span>المستشار العقاري الذكي</span>
+                <span className="text-xs font-normal text-muted-foreground">
+                  {isOverallLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <span className="h-2 w-2 rounded-full bg-green-500"></span>} متصل
+                </span>
               </div>
-            )}
-            <form onSubmit={handleSubmit} className="p-4 border-t">
-              <div className="relative flex items-end">
-                <Input
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="اكتب سؤالك هنا..."
-                  className="pr-12 py-3 rounded-xl border-2 min-h-[50px] pl-14"
-                  disabled={isLoading}
-                />
-                <Button 
-                  type="submit" 
-                  size="icon"
-                  className="absolute left-1.5 bottom-1.5 h-9 w-9 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 disabled:opacity-50"
-                  disabled={isLoading || !input.trim()}
-                >
-                  <Send className="h-4 w-4 rtl:rotate-180" />
-                </Button>
-              </div>
-            </form>
+            </CardTitle>
+            <Button variant="ghost" size="icon" onClick={resetChat}><RefreshCw className="h-4 w-4" /></Button>
           </div>
-        </CardContent>
+        </CardHeader>
+
+        <div 
+          ref={chatContainerRef}
+          className="flex-1 overflow-y-auto px-3 sm:px-4 md:px-6 py-4 space-y-4 md:space-y-6 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent"
+          style={{ direction: 'rtl' }}
+          onScroll={handleScroll}
+        >
+          {messages.length === 0 && !isOverallLoading && (
+            <div className="h-full flex flex-col items-center justify-center text-center space-y-4 p-6 opacity-90">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                <Bot className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-medium">مرحباً بك في المستشار العقاري</h3>
+              <p className="text-muted-foreground max-w-md">
+                أنا هنا لمساعدتك في كل ما يتعلق بالعقارات، التمويل، والاستثمار العقاري.
+              </p>
+            </div>
+          )}
+          
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={cn(
+                "flex w-full items-end gap-2 md:gap-3",
+                message.role === "assistant" ? "justify-start" : "justify-end"
+              )}
+            >
+              {message.role === "assistant" && (
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <Bot className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+                </div>
+              )}
+              <div
+                className={cn(
+                  "rounded-2xl px-4 py-3 md:px-5 md:py-4 w-full max-w-[90%] sm:max-w-[85%] md:max-w-[75%] break-words shadow-md",
+                  message.role === "assistant"
+                    ? "bg-card border border-border text-card-foreground"
+                    : "bg-primary text-primary-foreground",
+                  message.role === "assistant" ? "rounded-bl-sm" : "rounded-br-sm"
+                )}
+              >
+                <div className="whitespace-pre-wrap text-sm md:text-base leading-relaxed">
+                  {message.content}
+                </div>
+                <div className={cn(
+                  "text-[10px] mt-1 text-right",
+                  message.role === "assistant" ? "text-muted-foreground/70" : "text-primary-foreground/70"
+                )}>
+                  {new Date(message.timestamp).toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'})}
+                </div>
+              </div>
+              {message.role === "user" && (
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/90 flex items-center justify-center flex-shrink-0">
+                  <User className="h-4 w-4 md:h-5 md:w-5 text-primary-foreground" />
+                </div>
+              )}
+            </div>
+          ))}
+          {isLoading && (
+            <div className="flex items-start gap-2 md:gap-3">
+              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Bot className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+              </div>
+              <div className="bg-card border border-border rounded-2xl rounded-bl-sm px-4 py-3 md:px-5 md:py-4 w-full max-w-[90%] sm:max-w-[85%] md:max-w-[75%] shadow-md">
+                <div className="flex gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary/60 animate-pulse"></div>
+                  <div className="w-2 h-2 rounded-full bg-primary/60 animate-pulse [animation-delay:0.2s]"></div>
+                  <div className="w-2 h-2 rounded-full bg-primary/60 animate-pulse [animation-delay:0.4s]"></div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="p-3 sm:p-4 md:p-6 border-t bg-background/90 backdrop-blur">
+          <form onSubmit={handleSubmit} className="flex gap-2 md:gap-3">
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="اكتب سؤالك هنا..."
+              className="flex-1 resize-none overflow-y-auto text-right py-4 px-4 text-base rounded-2xl border-muted focus:border-primary shadow-sm w-full min-h-[44px] max-h-40"
+              onInput={(e) => {
+                e.currentTarget.style.height = "auto";
+                e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
+              }}
+              disabled={isOverallLoading}
+            />
+            <Button 
+              type="submit" 
+              disabled={isLoading || !input.trim() || isOverallLoading}
+              size="lg"
+              className="px-4 h-auto rounded-2xl text-base flex items-center gap-2 shadow-sm"
+            >
+              {isLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <>
+                  <Send className="h-5 w-5" />
+                  <span className="hidden sm:inline">إرسال</span>
+                </>
+              )}
+            </Button>
+          </form>
+          
+          <div className="mt-2 flex justify-center">
+            <p className="text-xs text-muted-foreground flex items-center gap-1 justify-center">
+              <Info className="h-3 w-3" />
+              هذا المستشار يقدم معلومات عامة فقط وليس بديلاً عن الاستشارات المهنية المتخصصة
+            </p>
+          </div>
+        </div>
       </Card>
     </div>
   );
-} 
+}

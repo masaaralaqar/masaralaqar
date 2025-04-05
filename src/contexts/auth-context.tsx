@@ -15,6 +15,7 @@ interface AuthContextType {
   logout: () => void;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isUserLoading: boolean;
   checkAccess: (path: string) => boolean;
   refreshSession: () => void;
 }
@@ -36,17 +37,67 @@ const generateCSRFToken = () => {
          Math.random().toString(36).substring(2, 15);
 };
 
+// وظائف مساعدة للتخزين المحلي - لتجنب أخطاء استخدام localStorage
+const safeSetItem = (key: string, value: string) => {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch (error) {
+    console.error(`فشل في تخزين ${key} في localStorage:`, error);
+    return false;
+  }
+};
+
+const safeGetItem = (key: string) => {
+  try {
+    return localStorage.getItem(key);
+  } catch (error) {
+    console.error(`فشل في استرجاع ${key} من localStorage:`, error);
+    return null;
+  }
+};
+
+const safeRemoveItem = (key: string) => {
+  try {
+    localStorage.removeItem(key);
+    return true;
+  } catch (error) {
+    console.error(`فشل في حذف ${key} من localStorage:`, error);
+    return false;
+  }
+};
+
 // تشفير بسيط للمعلومات (في الإنتاج يجب استخدام مكتبة تشفير حقيقية)
 const encryptData = (data: any): string => {
-  return btoa(JSON.stringify(data));
+  try {
+    const jsonString = JSON.stringify(data);
+    const encodedData = encodeURIComponent(jsonString);
+    return btoa(encodedData);
+  } catch (error) {
+    console.error('Error encrypting data:', error);
+    return '';
+  }
 };
 
 // فك تشفير البيانات
 const decryptData = (encryptedData: string): any => {
   try {
-    return JSON.parse(atob(encryptedData));
-  } catch (error) {
-    console.error("Error decrypting data:", error);
+    // مرحلة أولى - التحقق من أن البيانات موجودة
+    if (!encryptedData) {
+      return null;
+    }
+    
+    // مرحلة ثانية - فك التشفير
+    const decoded = atob(encryptedData);
+    if (!decoded) {
+      return null;
+    }
+    
+    // مرحلة ثالثة - فك ترميز URI وتحويل إلى كائن
+    const decodedData = decodeURIComponent(decoded);
+    return JSON.parse(decodedData);
+  } catch (e) {
+    console.error("Error decrypting data:", e);
     return null;
   }
 };
@@ -55,21 +106,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isUserLoading, setIsUserLoading] = useState(true);
   const navigate = useNavigate();
   
   // التحقق من جلسة المستخدم عند تحميل التطبيق
   useEffect(() => {
     const loadUserSession = () => {
+      console.log("🔐 Loading user session...");
       // التحقق من وجود بيانات المستخدم عند تحميل التطبيق
-      const encryptedSession = localStorage.getItem("user_session");
+      const encryptedSession = safeGetItem("user_session");
       if (encryptedSession) {
         try {
+          setIsUserLoading(true);
           const session = decryptData(encryptedSession);
           
           if (session) {
             // التحقق من صلاحية الجلسة
             const now = new Date().getTime();
             if (session.lastActive && now - session.lastActive < SESSION_TIMEOUT) {
+              console.log("✅ Valid session found, user:", session.user?.name);
               setUser(session.user);
               setIsAuthenticated(true);
               
@@ -77,15 +132,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               refreshSession();
             } else {
               // انتهت الجلسة
-              localStorage.removeItem("user_session");
-              localStorage.removeItem("csrf_token");
+              console.log("⏰ Session expired");
+              safeRemoveItem("user_session");
+              safeRemoveItem("csrf_token");
             }
           }
+          setIsUserLoading(false);
         } catch (error) {
-          console.error("Failed to parse stored user session:", error);
-          localStorage.removeItem("user_session");
-          localStorage.removeItem("csrf_token");
+          console.error("❌ Failed to parse stored user session:", error);
+          safeRemoveItem("user_session");
+          safeRemoveItem("csrf_token");
+          setIsUserLoading(false);
         }
+      } else {
+        console.log("🔄 No session found");
+        setIsUserLoading(false);
       }
       setIsLoading(false);
     };
@@ -114,16 +175,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // تحديث جلسة المستخدم
   const refreshSession = () => {
     if (user) {
-      const csrfToken = localStorage.getItem("csrf_token") || generateCSRFToken();
-      
-      const sessionData = {
-        user: user,
-        lastActive: new Date().getTime(),
-        csrfToken
-      };
-      
-      localStorage.setItem("csrf_token", csrfToken);
-      localStorage.setItem("user_session", encryptData(sessionData));
+      try {
+        const csrfToken = safeGetItem("csrf_token") || generateCSRFToken();
+        
+        const sessionData = {
+          user: user,
+          lastActive: new Date().getTime(),
+          csrfToken
+        };
+        
+        safeSetItem("csrf_token", csrfToken);
+        safeSetItem("user_session", encryptData(sessionData));
+      } catch (error) {
+        console.error('خطأ في تحديث الجلسة:', error);
+      }
     }
   };
 
@@ -133,44 +198,71 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 500));
     
-    // التحقق من كلمة المرور فقط
-    if (password === DEMO_PASSWORD) {
-      // إنشاء رمز CSRF
-      const csrfToken = generateCSRFToken();
-      localStorage.setItem("csrf_token", csrfToken);
-      
-      const authenticatedUser = { 
-        id: Date.now().toString(), // إنشاء معرف فريد
-        name: name,
-        sessionToken: generateCSRFToken(), // رمز جلسة آمن
-        lastActive: new Date().getTime()
-      };
-      
-      setUser(authenticatedUser);
-      setIsAuthenticated(true);
-      
-      // تخزين بيانات الجلسة بشكل آمن
-      const sessionData = {
-        user: authenticatedUser,
-        lastActive: new Date().getTime(),
-        csrfToken
-      };
-      
-      localStorage.setItem("user_session", encryptData(sessionData));
-      setIsLoading(false);
-      
-      // التحقق من وجود مسار للتوجيه بعد تسجيل الدخول
-      const redirectPath = localStorage.getItem("redirectAfterLogin");
-      if (redirectPath) {
-        localStorage.removeItem("redirectAfterLogin");
-        navigate(redirectPath);
+    console.log('التحقق من كلمة المرور:', password, 'المطلوبة:', DEMO_PASSWORD);
+    
+    // التحقق من كلمة المرور فقط (بطريقة أكثر تسامحًا)
+    if (password.trim() === DEMO_PASSWORD.trim()) {
+      try {
+        // تنظيف اسم المستخدم من أي فراغات أو أحرف غير مرغوبة
+        const cleanName = name.trim();
+        
+        // إنشاء رمز CSRF
+        const csrfToken = generateCSRFToken();
+        safeSetItem("csrf_token", csrfToken);
+        
+        const authenticatedUser = { 
+          id: Date.now().toString(), // إنشاء معرف فريد
+          name: cleanName,
+          sessionToken: generateCSRFToken(), // رمز جلسة آمن
+          lastActive: new Date().getTime()
+        };
+        
+        // تخزين اسم المستخدم في التخزين المحلي مباشرة للسهولة
+        safeSetItem("userName", cleanName);
+        
+        // تخزين في sessionStorage أيضًا للسهولة
+        try {
+          sessionStorage.setItem("userName", cleanName);
+        } catch (e) {
+          console.error('فشل في تخزين الاسم في sessionStorage:', e);
+        }
+        
+        setUser(authenticatedUser);
+        setIsAuthenticated(true);
+        
+        // تخزين بيانات الجلسة بشكل آمن
+        const sessionData = {
+          user: authenticatedUser,
+          lastActive: new Date().getTime(),
+          csrfToken
+        };
+        
+        safeSetItem("user_session", encryptData(sessionData));
+        
+        toast({
+          title: `أهلاً بك ${cleanName}`,
+          description: "مرحباً بك في منصة مسار العقار",
+        });
+        
+        setIsLoading(false);
+        
+        // إضافة تأخير صغير قبل التوجيه للتأكد من اكتمال تحديث الحالة
+        setTimeout(() => {
+          // توجيه المستخدم مباشرة إلى الصفحة الرئيسية
+          navigate(import.meta.env.MODE === 'production' ? '/masaralaqar/' : '/');
+        }, 300);
+        
+        return true;
+      } catch (error) {
+        console.error('حدث خطأ أثناء تسجيل الدخول:', error);
+        setIsLoading(false);
+        toast({
+          title: "حدث خطأ أثناء تسجيل الدخول",
+          description: "يرجى المحاولة مرة أخرى",
+          variant: "destructive",
+        });
+        return false;
       }
-      
-      toast({
-        title: `أهلاً بك ${name}`,
-        description: "مرحباً بك في منصة مسار العقار",
-      });
-      return true;
     }
     
     setIsLoading(false);
@@ -184,10 +276,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("user_session");
-    localStorage.removeItem("csrf_token");
+    // إزالة بيانات المستخدم من جميع التخزينات
+    safeRemoveItem("user_session");
+    safeRemoveItem("csrf_token");
+    safeRemoveItem("userName");
+    
+    // إزالة البيانات من sessionStorage أيضًا
+    try {
+      sessionStorage.removeItem("userName");
+    } catch (e) {
+      console.error('فشل في إزالة الاسم من sessionStorage:', e);
+    }
+    
     setIsAuthenticated(false);
-    navigate("/");
+    navigate(import.meta.env.MODE === 'production' ? '/masaralaqar/' : '/');
     toast({
       title: "تم تسجيل الخروج بنجاح",
     });
@@ -196,7 +298,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // دالة للتحقق من الوصول إلى مسار معين
   const checkAccess = (path: string): boolean => {
     // التحقق من صلاحية الجلسة قبل التحقق من الوصول
-    const encryptedSession = localStorage.getItem("user_session");
+    const encryptedSession = safeGetItem("user_session");
     if (encryptedSession) {
       const session = decryptData(encryptedSession);
       if (session) {
@@ -221,6 +323,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logout,
         isAuthenticated,
         isLoading,
+        isUserLoading,
         checkAccess,
         refreshSession,
       }}

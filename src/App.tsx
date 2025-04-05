@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/auth-context";
 import { preventAutoScroll } from "./lib/utils";
 // Temporarily removed ThemeProvider due to path issues

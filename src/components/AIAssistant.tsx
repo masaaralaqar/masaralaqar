@@ -28,10 +28,10 @@ export function AIAssistant({
   headerTitle = "المساعد الذكي"
 }: AIAssistantProps) {
   const { toast } = useToast();
-  const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -44,15 +44,14 @@ export function AIAssistant({
     "كيف أعرف أقصى مبلغ تمويل يمكنني الحصول عليه؟"
   ];
 
-  // تحديد ما إذا كان المستخدم في نهاية المحادثة
-  const isAtBottom = () => {
+  const isAtBottom = (): boolean => {
     if (!chatContainerRef.current) return true;
-    
     const container = chatContainerRef.current;
-    const threshold = 100; // بكسل
-    const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
-    
-    return distanceFromBottom <= threshold;
+    const scrollTop = container.scrollTop;
+    const scrollHeight = container.scrollHeight;
+    const clientHeight = container.clientHeight;
+    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+    return distanceFromBottom <= 50;
   };
 
   const scrollToBottom = () => {
@@ -60,8 +59,8 @@ export function AIAssistant({
     if (isInitialLoad) return;
     
     // نمرر فقط إذا كان المستخدم في أسفل المحادثة أو تم تفعيل التمرير التلقائي
-    if (autoScroll && messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (autoScroll && chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   };
 
@@ -72,19 +71,11 @@ export function AIAssistant({
     }
   };
 
+  // إلغاء التمرير التلقائي عند تحميل المكون
   useEffect(() => {
-    // منع التمرير التلقائي للأسفل بشكل مكثف
-    // استدعاء دالة منع التمرير التلقائي من المكتبة
     const cleanup = preventAutoScroll();
-    
-    // إعادة تطبيق لضمان عدم التمرير
-    const timer = setTimeout(() => {
-      window.scrollTo(0, 0);
-    }, 500);
-    
     return () => {
       if (cleanup) cleanup();
-      clearTimeout(timer);
     };
   }, []);
 
@@ -112,19 +103,6 @@ export function AIAssistant({
       return () => clearTimeout(timer);
     }
   }, [messages, autoScroll, isInitialLoad]);
-
-  // إضافة رسالة ترحيب عند تحميل الصفحة لأول مرة
-  useEffect(() => {
-    if (initialMessage && messages.length === 0) {
-      const welcomeMessage: Message = {
-        id: Date.now().toString(),
-        role: "assistant",
-        content: initialMessage,
-        timestamp: new Date()
-      };
-      setMessages([welcomeMessage]);
-    }
-  }, [initialMessage, messages.length]);
 
   // التمرير للأسفل عند إضافة رسائل جديدة (إذا كان المستخدم في نهاية المحادثة)
   useEffect(() => {
@@ -410,7 +388,6 @@ export function AIAssistant({
                       </div>
                     </div>
                   )}
-                  <div ref={messagesEndRef} />
                 </div>
                 
                 {/* Fixed scroll button that appears when not at bottom */}

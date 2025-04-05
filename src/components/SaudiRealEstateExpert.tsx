@@ -65,7 +65,9 @@ export function SaudiRealEstateExpert() {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
+  const [authChecked, setAuthChecked] = useState(false);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // Updated sample questions with emojis
   const sampleQuestions = [
@@ -155,31 +157,39 @@ export function SaudiRealEstateExpert() {
   }, [messages, autoScroll, isInitialLoad]);
 
   useEffect(() => {
-    // منع التمرير لأسفل عند إضافة رسالة الترحيب
-    const initialScrollPos = window.scrollY;
+    // متابعة حالة المستخدم وتسجيل الدخول
+    if (isLoading) return;
     
-    // إضافة رسالة ترحيب عند تحميل الصفحة
-    if (user?.name && messages.length === 0) {
-      const welcomeMessage: Message = {
-        id: Date.now().toString(),
-        role: "assistant",
-        content: `مرحباً ${user.name}، أنا أبو محمد مستشارك في مجال العقار. يمكنني مساعدتك بالمعلومات المتوفرة حول:\n\n- التمويل العقاري\n- خطوات شراء العقار\n- الإجراءات القانونية\n- المصطلحات العقارية\n\nهذه المنصة تقدم معلومات عامة فقط وليست بديلاً عن الاستشارات المهنية المتخصصة.`,
-        timestamp: new Date(),
-      };
-      
-      setMessages([welcomeMessage]);
+    if (!isAuthenticated) {
+      // إذا لم يكن المستخدم مسجل، نوجهه لصفحة تسجيل الدخول
+      console.log("🔒 User not authenticated, redirecting to login");
+      window.location.href = import.meta.env.MODE === 'production' ? '/masaralaqar/login' : '/login';
+    } else {
+      setAuthChecked(true);
     }
-    
-    // الحفاظ على موضع التمرير
-    window.scrollTo(0, initialScrollPos);
-    
-    // إعادة تطبيق منع التمرير التلقائي للتأكيد
-    const timer = setTimeout(() => {
-      window.scrollTo(0, initialScrollPos);
-    }, 100);
-    
-    return () => clearTimeout(timer);
-  }, [user, messages.length]);
+  }, [isAuthenticated, isLoading]);
+
+  // تفعيل الكتابة في المدخل عند الضغط على زر الإرسال
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && !e.shiftKey && !isLoading) {
+        e.preventDefault();
+        const event = new Event('submit', { cancelable: true }) as unknown as React.FormEvent;
+        handleSubmit(event);
+      }
+    };
+
+    if (inputRef.current) {
+      inputRef.current.addEventListener("keydown", handleKeyDown);
+      inputRef.current.focus();
+    }
+
+    return () => {
+      if (inputRef.current) {
+        inputRef.current.removeEventListener("keydown", handleKeyDown);
+      }
+    };
+  }, [isLoading]);
 
   const getAIResponse = async (question: string) => {
     setIsLoading(true);
