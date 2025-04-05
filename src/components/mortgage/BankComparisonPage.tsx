@@ -205,7 +205,7 @@ export function BankComparisonPage() {
           <CardContent>
             <div className="md:hidden flex items-center gap-2 mb-3 text-sm text-muted-foreground">
               <Info size={14} className="shrink-0" />
-              <span>مرر للجانب للاطلاع على كامل الجدول</span>
+              <span>مرر لليسار لمشاهدة باقي الجدول</span>
               <ArrowLeft size={14} className="animate-pulse text-primary shrink-0" />
             </div>
             <div className="rounded-md border overflow-x-auto">
