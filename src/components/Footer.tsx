@@ -15,6 +15,19 @@ const Footer: React.FC = () => {
               className="w-full h-auto"
             />
           </div>
+          
+          {/* شعار ورقم معروف */}
+          <div className="flex flex-col items-center gap-1">
+            <div className="w-20 h-auto">
+              <img 
+                src={import.meta.env.MODE === 'production' ? '/masaralaqar/assets/maroof-logo.svg' : '/assets/maroof-logo.svg'} 
+                alt="معروف" 
+                className="w-full h-auto"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">رقم معروف: 359034</p>
+          </div>
+          
           <p className="text-sm text-muted-foreground text-center">
             © {currentYear} جميع المعلومات المقدمة في هذه المنصة هي لأغراض معلوماتية فقط.
           </p>
