@@ -18,9 +18,9 @@ const Footer: React.FC = () => {
           
           {/* شعار ورقم معروف */}
           <div className="flex flex-col items-center gap-1">
-            <div className="w-20 h-auto">
+            <div className="w-24 h-auto">
               <img 
-                src={import.meta.env.MODE === 'production' ? '/masaralaqar/assets/maroof-logo.svg' : '/assets/maroof-logo.svg'} 
+                src="https://maroof.sa/Images/Client/Certificate.png" 
                 alt="معروف" 
                 className="w-full h-auto"
               />
