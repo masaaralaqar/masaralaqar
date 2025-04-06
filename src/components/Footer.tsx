@@ -27,6 +27,28 @@ const Footer: React.FC = () => {
               الشروط والأحكام
             </Link>
           </div>
+          
+          {/* وسائل الدفع الآمنة */}
+          <div className="mt-4 pt-4 border-t border-border/30 w-full">
+            <p className="text-sm text-center text-muted-foreground mb-3">وسائل دفع آمنة</p>
+            <div className="flex flex-wrap justify-center gap-4 items-center">
+              <div className="payment-icon">
+                <img src={import.meta.env.MODE === 'production' ? '/masaralaqar/assets/payment-icons/apple-pay.svg' : '/assets/payment-icons/apple-pay.svg'} alt="Apple Pay" className="h-8" />
+              </div>
+              <div className="payment-icon">
+                <img src={import.meta.env.MODE === 'production' ? '/masaralaqar/assets/payment-icons/mada.svg' : '/assets/payment-icons/mada.svg'} alt="مدى" className="h-8" />
+              </div>
+              <div className="payment-icon">
+                <img src={import.meta.env.MODE === 'production' ? '/masaralaqar/assets/payment-icons/visa.svg' : '/assets/payment-icons/visa.svg'} alt="Visa" className="h-7" />
+              </div>
+              <div className="payment-icon">
+                <img src={import.meta.env.MODE === 'production' ? '/masaralaqar/assets/payment-icons/mastercard.svg' : '/assets/payment-icons/mastercard.svg'} alt="Mastercard" className="h-7" />
+              </div>
+              <div className="payment-icon">
+                <img src={import.meta.env.MODE === 'production' ? '/masaralaqar/assets/payment-icons/stcpay.svg' : '/assets/payment-icons/stcpay.svg'} alt="STC Pay" className="h-8" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
