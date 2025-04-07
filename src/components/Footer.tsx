@@ -8,13 +8,6 @@ const Footer: React.FC = () => {
     <footer className="border-t py-6 bg-muted/30">
       <div className="container">
         <div className="flex flex-col items-center justify-center gap-4">
-          <div className="w-32 h-auto mb-2">
-            <img 
-              src={import.meta.env.MODE === 'production' ? '/masaralaqar/assets/masar-logo.svg' : '/assets/masar-logo.svg'} 
-              alt="مسار العقار" 
-              className="w-full h-auto"
-            />
-          </div>
           
           <p className="text-sm text-muted-foreground text-center">
             © {currentYear} جميع المعلومات المقدمة في هذه المنصة هي لأغراض معلوماتية فقط.
