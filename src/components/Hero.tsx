@@ -1,4 +1,3 @@
-
 import React from "react";
 import { FadeIn, SlideIn } from "./ui/transitions";
 import { GlassCard } from "./ui/glass-card";
@@ -50,9 +49,7 @@ export function Hero() {
             <Link to="#calculator" className="block h-full group">
               <GlassCard 
                 className="h-full p-8 md:p-10 text-center transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-lg"
-                hoverEffect={true}
-                intensity="light"
-                borderEffect="subtle"
+                hoverEffect="scale"
               >
                 <div className="flex flex-col items-center justify-center h-full">
                   <div className="bg-gradient-to-br from-primary/20 to-primary/5 w-20 h-20 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110 duration-300 shadow-sm">
@@ -75,9 +72,7 @@ export function Hero() {
             <Link to="#assistant" className="block h-full group">
               <GlassCard 
                 className="h-full p-8 md:p-10 text-center transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-lg"
-                hoverEffect={true}
-                intensity="light" 
-                borderEffect="subtle"
+                hoverEffect="scale"
               >
                 <div className="flex flex-col items-center justify-center h-full">
                   <div className="bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 w-20 h-20 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110 duration-300 shadow-sm">

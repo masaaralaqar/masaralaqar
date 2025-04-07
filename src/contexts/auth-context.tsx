@@ -258,7 +258,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             navigate(redirectPath);
           } else {
             // توجيه المستخدم إلى الصفحة الرئيسية إذا لم يكن هناك مسار محفوظ
-            navigate(import.meta.env.MODE === 'production' ? '/masaralaqar/' : '/');
+            navigate(import.meta.env.MODE === 'production' ? '/' : '/');
           }
         }, 300);
         
@@ -300,7 +300,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     
     setIsAuthenticated(false);
-    navigate(import.meta.env.MODE === 'production' ? '/masaralaqar/' : '/');
+    navigate(import.meta.env.MODE === 'production' ? '/' : '/');
     toast({
       title: "تم تسجيل الخروج بنجاح",
     });

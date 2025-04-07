@@ -2,7 +2,7 @@
   "name": "masar-al-aqar",
   "private": true,
   "version": "1.0.0",
-  "homepage": "https://masaaralaqar.github.io/masaralaqar",
+  "homepage": "https://masaralaqar.sa",
   "description": "منصة سعودية تساعد المهتمين بالعقار في اكتساب المعرفة الصحيحة، عبر دليل عقاري شامل، وبوت ذكي يجاوب على استفساراتك، وأدوات تسهّل عليك فهم التمويل، الاستثمار، وصيانة المنزل.",
   "type": "module",
   "scripts": {

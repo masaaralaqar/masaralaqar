@@ -54,7 +54,7 @@ export default function Header() {
           <Link to="/" className="flex items-center">
             <div className="py-2 px-1 flex items-center justify-center">
               <img 
-                src={import.meta.env.MODE === 'production' ? '/masaralaqar/logo.svg' : '/logo.svg'} 
+                src={import.meta.env.MODE === 'production' ? '/logo.svg' : '/logo.svg'} 
                 alt="مسار العقار" 
                 className="h-10 sm:h-14 md:h-16 w-auto object-contain"
               />

@@ -142,7 +142,7 @@ export default function Index() {
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md rotate-3 transform hover:rotate-0 transition-all duration-300">
                   <img 
                     src={import.meta.env.MODE === 'production' 
-                      ? 'https://masaaralaqar.github.io/masaralaqar/assets/guide-cover.svg' 
+                      ? 'https://masaralaqar.sa/assets/guide-cover.svg' 
                       : '/assets/guide-cover.svg'
                     } 
                     alt="دليل مسار العقار" 

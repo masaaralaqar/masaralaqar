@@ -212,7 +212,7 @@ export function SaudiRealEstateExpert() {
     if (!isAuthenticated) {
       // إذا لم يكن المستخدم مسجل، نوجهه لصفحة تسجيل الدخول
       console.log("🔒 User not authenticated, redirecting to login");
-      window.location.href = import.meta.env.MODE === 'production' ? '/masaralaqar/login' : '/login';
+      window.location.href = import.meta.env.MODE === 'production' ? '/login' : '/login';
     } else {
       setAuthChecked(true);
     }

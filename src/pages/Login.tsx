@@ -25,7 +25,7 @@ export default function Login() {
     // إذا كان المستخدم مسجل الدخول بالفعل، وجهه إلى الصفحة الرئيسية
     if (isAuthenticated) {
       // استخدام المسار المناسب اعتماداً على بيئة العمل
-      navigate(import.meta.env.MODE === 'production' ? '/masaralaqar/' : '/');
+      navigate(import.meta.env.MODE === 'production' ? '/' : '/');
     }
   }, [isAuthenticated, navigate]);
 
@@ -105,7 +105,7 @@ export default function Login() {
             <div className="flex justify-center py-4">
               <div className="p-3 bg-white/5 rounded-xl shadow-sm flex items-center justify-center">
                 <img 
-                  src={import.meta.env.MODE === 'production' ? '/masaralaqar/logo.svg' : '/logo.svg'} 
+                  src={import.meta.env.MODE === 'production' ? '/logo.svg' : '/logo.svg'} 
                   alt="مسار العقار" 
                   className="h-24 sm:h-32 md:h-40 w-auto object-contain"
                 />
