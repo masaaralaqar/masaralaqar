@@ -32,6 +32,8 @@ import CalculatorPage from "./pages/calculator";
 // Missing components - let's create a simple AuthLayout component inline
 // import AuthLayout from "./components/AuthLayout";
 // import { ProtectedRoute } from "./components/ProtectedRoute";
+// Removed PaymentIcons component to hide payment icons
+// import PaymentIcons from "./components/PaymentIcons";
 import { preventScrollOnNavigation } from "@/lib/utils";
 
 // Component for scroll management during navigation
