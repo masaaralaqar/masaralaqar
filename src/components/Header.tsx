@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Calculator, Bot, Building, LogOut, User, Menu, LogIn, ArrowUp } from "lucide-react";
+import { Calculator, Bot, Building, LogOut, User, Menu, LogIn, ArrowUp, MessageSquare, Phone } from "lucide-react";
 // Temporarily removed ModeToggle import due to path issues
 // import { ModeToggle } from "./mode-toggle"; 
 import { useAuth } from "@/contexts/auth-context";
@@ -95,6 +95,20 @@ export default function Header() {
                   الرئيسية
                 </Link>
                 
+                <Link 
+                  to="/faq"
+                  className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/faq") ? "text-primary" : ""}`}
+                >
+                  الأسئلة الشائعة
+                </Link>
+                
+                <Link 
+                  to="/contact"
+                  className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/contact") ? "text-primary" : ""}`}
+                >
+                  اتصل بنا
+                </Link>
+                
                 {/* روابط للصفحات المحمية - تختلف وظائفها حسب حالة تسجيل الدخول */}
                 <button 
                   onClick={() => handleProtectedPathClick("/calculator")}
@@ -167,6 +181,24 @@ export default function Header() {
                   className="w-full justify-center gap-2"
                 >
                   الرئيسية
+                </Button>
+              </Link>
+
+              <Link to="/faq" onClick={() => setIsMenuOpen(false)}>
+                <Button
+                  variant={isActive("/faq") ? "default" : "ghost"}
+                  className="w-full justify-center gap-2"
+                >
+                  الأسئلة الشائعة
+                </Button>
+              </Link>
+
+              <Link to="/contact" onClick={() => setIsMenuOpen(false)}>
+                <Button
+                  variant={isActive("/contact") ? "default" : "ghost"}
+                  className="w-full justify-center gap-2"
+                >
+                  اتصل بنا
                 </Button>
               </Link>
               
@@ -255,6 +287,17 @@ export default function Header() {
           <ArrowUp className="h-6 w-6" />
         </button>
       )}
+
+      {/* WhatsApp Direct Chat Button */}
+      <a 
+        href="https://wa.me/966547271676"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-4 right-4 p-2 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 transition-colors"
+        aria-label="تواصل معنا عبر واتساب"
+      >
+        <MessageSquare className="h-6 w-6" />
+      </a>
     </>
   );
 } 
