@@ -47,20 +47,30 @@ const Footer: React.FC = () => {
               <img src="https://img.icons8.com/color/48/apple-pay.png" alt="Apple Pay" className="h-8" />
             </div>
             
-            <div className="flex flex-wrap items-center justify-center gap-6 mt-4">
+            <div className="flex flex-wrap items-center justify-center gap-10 mt-6">
               <div className="flex flex-col items-center">
-                <img src="/assets/certificate.png" alt="معروف" className="h-12" />
-                <p className="text-xs text-muted-foreground mt-1">رقم معروف: 359034</p>
+                <div className="flex items-center gap-2">
+                  <img 
+                    src={import.meta.env.MODE === 'production' ? '/masaralaqar/assets/certificate-icon.png' : '/assets/certificate-icon.png'} 
+                    alt="معروف" 
+                    className="h-6" 
+                  />
+                  <span className="font-medium text-sm">معروف</span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">رقم: 359034</p>
               </div>
               
               <div className="flex flex-col items-center">
-                <img 
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Saudi_Ministry_of_Commerce_Logo.svg/200px-Saudi_Ministry_of_Commerce_Logo.svg.png" 
-                  alt="شهادة منصة الأعمال" 
-                  className="h-10" 
-                  title="موثّق عبر وزارة التجارة" 
-                />
-                <p className="text-xs text-muted-foreground mt-1">وزارة التجارة</p>
+                <div className="flex items-center gap-2">
+                  <img 
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Saudi_Ministry_of_Commerce_Logo.svg/200px-Saudi_Ministry_of_Commerce_Logo.svg.png" 
+                    alt="شهادة منصة الأعمال" 
+                    className="h-6" 
+                    title="موثّق عبر وزارة التجارة" 
+                  />
+                  <span className="font-medium text-sm">وزارة التجارة</span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">منصة موثوقة</p>
               </div>
             </div>
           </div>
