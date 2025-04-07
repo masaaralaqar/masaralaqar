@@ -35,45 +35,6 @@ const Footer: React.FC = () => {
               الشروط والأحكام
             </Link>
           </div>
-          
-          <div className="mt-6 pt-4 border-t border-border/30 w-full">
-            <p className="text-sm text-center text-muted-foreground mb-3">طرق الدفع المدعومة وشهادات الموثوقية</p>
-            <div className="flex flex-wrap items-center justify-center gap-6">
-              <img src="https://img.icons8.com/color/48/visa.png" alt="Visa" className="h-8" />
-              <img src="https://img.icons8.com/color/48/mastercard.png" alt="Mastercard" className="h-8" />
-              <img src="https://img.icons8.com/color/48/amex.png" alt="American Express" className="h-8" />
-              <img src="https://img.icons8.com/color/48/mada-card.png" alt="Mada" className="h-8" />
-              <img src="https://seeklogo.com/images/S/stc-pay-logo-B1CA44F339-seeklogo.com.png" alt="STC Pay" className="h-9" />
-              <img src="https://img.icons8.com/color/48/apple-pay.png" alt="Apple Pay" className="h-8" />
-            </div>
-            
-            <div className="flex flex-wrap items-center justify-center gap-10 mt-6">
-              <div className="flex flex-col items-center">
-                <div className="flex items-center gap-2">
-                  <img 
-                    src={import.meta.env.MODE === 'production' ? '/masaralaqar/assets/certificate-icon.png' : '/assets/certificate-icon.png'} 
-                    alt="معروف" 
-                    className="h-6" 
-                  />
-                  <span className="font-medium text-sm">معروف</span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">رقم: 359034</p>
-              </div>
-              
-              <div className="flex flex-col items-center">
-                <div className="flex items-center gap-2">
-                  <img 
-                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Saudi_Ministry_of_Commerce_Logo.svg/200px-Saudi_Ministry_of_Commerce_Logo.svg.png" 
-                    alt="شهادة منصة الأعمال" 
-                    className="h-6" 
-                    title="موثّق عبر وزارة التجارة" 
-                  />
-                  <span className="font-medium text-sm">وزارة التجارة</span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">منصة موثوقة</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </footer>
