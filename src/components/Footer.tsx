@@ -8,7 +8,7 @@ const Footer: React.FC = () => {
     <footer className="border-t py-6 bg-muted/30">
       <div className="container">
         <div className="flex flex-col items-center justify-center gap-4">
-          <div className="w-32 h-auto">
+          <div className="w-32 h-auto mb-2">
             <img 
               src={import.meta.env.MODE === 'production' ? '/masaralaqar/assets/masar-logo.svg' : '/assets/masar-logo.svg'} 
               alt="مسار العقار" 
@@ -36,15 +36,33 @@ const Footer: React.FC = () => {
             </Link>
           </div>
           
-          <div className="flex flex-wrap items-center justify-center gap-4 mt-6">
-            <img src="https://img.icons8.com/color/48/visa.png" alt="Visa" />
-            <img src="https://img.icons8.com/color/48/mastercard.png" alt="Mastercard" />
-            <img src="https://img.icons8.com/color/48/amex.png" alt="American Express" />
-            <img src="https://img.icons8.com/color/48/mada-card.png" alt="Mada" />
-            <img src="https://seeklogo.com/images/S/stc-pay-logo-B1CA44F339-seeklogo.com.png" alt="STC Pay" style={{height: "48px"}} />
-            <img src="https://img.icons8.com/color/48/apple-pay.png" alt="Apple Pay" />
-            <img src="https://maroof.sa/assets/imgs/maroof-logo.svg" alt="معروف" style={{height: "48px"}} title="موثّق في معروف - رقم: 359034" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Saudi_Ministry_of_Commerce_Logo.svg/200px-Saudi_Ministry_of_Commerce_Logo.svg.png" alt="شهادة منصة الأعمال" style={{height: "48px"}} title="موثّق عبر وزارة التجارة" />
+          <div className="mt-6 pt-4 border-t border-border/30 w-full">
+            <p className="text-sm text-center text-muted-foreground mb-3">طرق الدفع المدعومة وشهادات الموثوقية</p>
+            <div className="flex flex-wrap items-center justify-center gap-6">
+              <img src="https://img.icons8.com/color/48/visa.png" alt="Visa" className="h-8" />
+              <img src="https://img.icons8.com/color/48/mastercard.png" alt="Mastercard" className="h-8" />
+              <img src="https://img.icons8.com/color/48/amex.png" alt="American Express" className="h-8" />
+              <img src="https://img.icons8.com/color/48/mada-card.png" alt="Mada" className="h-8" />
+              <img src="https://seeklogo.com/images/S/stc-pay-logo-B1CA44F339-seeklogo.com.png" alt="STC Pay" className="h-9" />
+              <img src="https://img.icons8.com/color/48/apple-pay.png" alt="Apple Pay" className="h-8" />
+            </div>
+            
+            <div className="flex flex-wrap items-center justify-center gap-6 mt-4">
+              <div className="flex flex-col items-center">
+                <img src="/assets/certificate.png" alt="معروف" className="h-12" />
+                <p className="text-xs text-muted-foreground mt-1">رقم معروف: 359034</p>
+              </div>
+              
+              <div className="flex flex-col items-center">
+                <img 
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Saudi_Ministry_of_Commerce_Logo.svg/200px-Saudi_Ministry_of_Commerce_Logo.svg.png" 
+                  alt="شهادة منصة الأعمال" 
+                  className="h-10" 
+                  title="موثّق عبر وزارة التجارة" 
+                />
+                <p className="text-xs text-muted-foreground mt-1">وزارة التجارة</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
