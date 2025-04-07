@@ -16,6 +16,33 @@ const Footer: React.FC = () => {
             />
           </div>
           
+          <div className="flex flex-wrap justify-center items-center gap-6 my-4 max-w-xl">
+            <div className="flex flex-wrap justify-center items-center gap-3">
+              <img src="https://maroof.sa/Images/VisaCard.png" alt="فيزا" title="فيزا" width="40" height="25" loading="lazy" />
+              <img src="https://maroof.sa/Images/MasterCard.png" alt="ماستر كارد" title="ماستر كارد" width="40" height="25" loading="lazy" />
+              <img src="https://maroof.sa/Images/mada.png" alt="مدى" title="مدى" width="40" height="25" loading="lazy" />
+              <img src="https://maroof.sa/Images/ApplePay.png" alt="آبل باي" title="آبل باي" width="40" height="25" loading="lazy" />
+            </div>
+            
+            <div className="flex items-center gap-2 mr-2">
+              <a 
+                href="https://maroof.sa/359034" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                title="رقم معروف: 359034"
+              >
+                <img 
+                  src="https://maroof.sa/Images/maroof.png" 
+                  alt="شهادة معروف" 
+                  width="60" 
+                  height="25"
+                  loading="lazy"
+                />
+              </a>
+              <span className="text-xs text-muted-foreground">359034</span>
+            </div>
+          </div>
+          
           <p className="text-sm text-muted-foreground text-center">
             © {currentYear} جميع المعلومات المقدمة في هذه المنصة هي لأغراض معلوماتية فقط.
           </p>
