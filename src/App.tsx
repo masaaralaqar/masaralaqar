@@ -35,6 +35,8 @@ import CalculatorPage from "./pages/calculator";
 // Removed PaymentIcons component to hide payment icons
 // import PaymentIcons from "./components/PaymentIcons";
 import { preventScrollOnNavigation } from "@/lib/utils";
+import FAQ from "./pages/FAQ";
+import Contact from "./pages/Contact";
 
 // Component for scroll management during navigation
 const ScrollToTop = () => {
@@ -87,19 +89,11 @@ function AppContent() {
         <Routes>
           {/* صفحات عامة لا تتطلب تسجيل الدخول */}
           <Route path="/" element={<Index />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-conditions" element={<TermsConditions />} />
-          <Route path="/login" element={<Login />} />
-          
-          {/* صفحات محمية تتطلب تسجيل الدخول */}
+          <Route path="/payment" element={<NotFound />} />
+          <Route path="/dashboard" element={<NotFound />} />
           <Route path="/calculator" element={
             <ProtectedRoute>
               <CalculatorPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/bank-comparison" element={
-            <ProtectedRoute>
-              <BankComparison />
             </ProtectedRoute>
           } />
           <Route path="/ai-assistant" element={
@@ -107,7 +101,18 @@ function AppContent() {
               <SaudiRealEstateExpert />
             </ProtectedRoute>
           } />
-          
+          <Route path="/guide" element={<NotFound />} />
+          <Route path="/compare" element={<NotFound />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-conditions" element={<TermsConditions />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/bank-comparison" element={
+            <ProtectedRoute>
+              <BankComparison />
+            </ProtectedRoute>
+          } />
           {/* التعامل مع المسارات غير الموجودة - توجيه للصفحة الرئيسية */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

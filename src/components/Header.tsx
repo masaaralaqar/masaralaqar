@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Calculator, Bot, Building, LogOut, User, Menu, LogIn, ArrowUp, MessageSquare, Phone } from "lucide-react";
+import { Calculator, Bot, Building, LogOut, User, Menu, LogIn, ArrowUp, MessageSquare, Phone, ExternalLink } from "lucide-react";
 // Temporarily removed ModeToggle import due to path issues
 // import { ModeToggle } from "./mode-toggle"; 
 import { useAuth } from "@/contexts/auth-context";
@@ -89,10 +89,10 @@ export default function Header() {
                 )}
 
                 <Link 
-                  to="/"
-                  className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/") ? "text-primary" : ""}`}
+                  to="/contact"
+                  className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/contact") ? "text-primary" : ""}`}
                 >
-                  الرئيسية
+                  اتصل بنا
                 </Link>
                 
                 <Link 
@@ -103,33 +103,32 @@ export default function Header() {
                 </Link>
                 
                 <Link 
-                  to="/contact"
-                  className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/contact") ? "text-primary" : ""}`}
-                >
-                  اتصل بنا
-                </Link>
-                
-                {/* روابط للصفحات المحمية - تختلف وظائفها حسب حالة تسجيل الدخول */}
-                <button 
-                  onClick={() => handleProtectedPathClick("/calculator")}
-                  className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/calculator") ? "text-primary" : ""}`}
-                >
-                  حاسبة التمويل
-                </button>
-                
-                <button 
-                  onClick={() => handleProtectedPathClick("/ai-assistant")}
-                  className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/ai-assistant") ? "text-primary" : ""}`}
-                >
-                  البوت العقاري
-                </button>
-                
-                <button 
-                  onClick={() => handleProtectedPathClick("/bank-comparison")}
+                  to="/bank-comparison"
                   className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/bank-comparison") ? "text-primary" : ""}`}
                 >
                   مقارنة البنوك
-                </button>
+                </Link>
+                
+                <Link 
+                  to="/ai-assistant"
+                  className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/ai-assistant") ? "text-primary" : ""}`}
+                >
+                  البوت العقاري
+                </Link>
+                
+                <Link 
+                  to="/calculator"
+                  className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/calculator") ? "text-primary" : ""}`}
+                >
+                  حاسبة التمويل
+                </Link>
+                
+                <Link 
+                  to="/"
+                  className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/") ? "text-primary" : ""}`}
+                >
+                  الرئيسية
+                </Link>
                 
                 {isAuthenticated ? (
                   // إذا كان المستخدم مسجل الدخول، أظهر زر تسجيل الخروج
@@ -175,12 +174,12 @@ export default function Header() {
                 </div>
               )}
 
-              <Link to="/" onClick={() => setIsMenuOpen(false)}>
+              <Link to="/contact" onClick={() => setIsMenuOpen(false)}>
                 <Button
-                  variant={isActive("/") ? "default" : "ghost"}
+                  variant={isActive("/contact") ? "default" : "ghost"}
                   className="w-full justify-center gap-2"
                 >
-                  الرئيسية
+                  اتصل بنا
                 </Button>
               </Link>
 
@@ -193,57 +192,41 @@ export default function Header() {
                 </Button>
               </Link>
 
-              <Link to="/contact" onClick={() => setIsMenuOpen(false)}>
-                <Button
-                  variant={isActive("/contact") ? "default" : "ghost"}
-                  className="w-full justify-center gap-2"
-                >
-                  اتصل بنا
-                </Button>
-              </Link>
-              
-              {/* روابط للصفحات المحمية في القائمة المحمولة */}
-              <button
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  handleProtectedPathClick("/calculator");
-                }}
-              >
-                <Button
-                  variant={isActive("/calculator") ? "default" : "ghost"}
-                  className="w-full justify-center gap-2"
-                >
-                  حاسبة التمويل
-                </Button>
-              </button>
-              
-              <button
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  handleProtectedPathClick("/ai-assistant");
-                }}
-              >
-                <Button
-                  variant={isActive("/ai-assistant") ? "default" : "ghost"}
-                  className="w-full justify-center gap-2"
-                >
-                  البوت العقاري
-                </Button>
-              </button>
-              
-              <button
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  handleProtectedPathClick("/bank-comparison");
-                }}
-              >
+              <Link to="/bank-comparison" onClick={() => setIsMenuOpen(false)}>
                 <Button
                   variant={isActive("/bank-comparison") ? "default" : "ghost"}
                   className="w-full justify-center gap-2"
                 >
                   مقارنة البنوك
                 </Button>
-              </button>
+              </Link>
+
+              <Link to="/ai-assistant" onClick={() => setIsMenuOpen(false)}>
+                <Button
+                  variant={isActive("/ai-assistant") ? "default" : "ghost"}
+                  className="w-full justify-center gap-2"
+                >
+                  البوت العقاري
+                </Button>
+              </Link>
+
+              <Link to="/calculator" onClick={() => setIsMenuOpen(false)}>
+                <Button
+                  variant={isActive("/calculator") ? "default" : "ghost"}
+                  className="w-full justify-center gap-2"
+                >
+                  حاسبة التمويل
+                </Button>
+              </Link>
+
+              <Link to="/" onClick={() => setIsMenuOpen(false)}>
+                <Button
+                  variant={isActive("/") ? "default" : "ghost"}
+                  className="w-full justify-center gap-2"
+                >
+                  الرئيسية
+                </Button>
+              </Link>
               
               {isAuthenticated ? (
                 // زر تسجيل الخروج للمستخدمين المسجلين
@@ -293,10 +276,14 @@ export default function Header() {
         href="https://wa.me/966547271676"
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-4 right-4 p-2 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 transition-colors"
+        className="fixed bottom-4 right-4 p-4 bg-green-500 text-white rounded-xl shadow-lg hover:bg-green-600 transition-all duration-300 transform hover:scale-105 z-50"
         aria-label="تواصل معنا عبر واتساب"
+        title="للأسئلة والاستفسارات"
       >
-        <MessageSquare className="h-6 w-6" />
+        <div className="flex items-center gap-2">
+          <MessageSquare className="h-6 w-6" />
+          <span className="text-sm font-medium">واتساب</span>
+        </div>
       </a>
     </>
   );
